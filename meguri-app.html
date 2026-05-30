@@ -1,0 +1,2948 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>めぐり</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ===== CSS RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: #FDF8F2;
+  color: #3D2B1F;
+  min-height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ===== COLOR TOKENS ===== */
+:root {
+  --accent:       #C4622A;
+  --accent-light: #E8916A;
+  --accent-dark:  #8F4420;
+  --bg:           #FDF8F2;
+  --bg-card:      #FFFCF8;
+  --bg-muted:     #F5EDE2;
+  --border:       #E8D8C8;
+  --border-light: #F0E4D4;
+  --text-primary: #3D2B1F;
+  --text-secondary:#7A5C48;
+  --text-muted:   #A88B78;
+  --success:      #6B8C5A;
+  --warning:      #C49A2A;
+  --shadow-sm:    0 1px 4px rgba(61,43,31,.08);
+  --shadow-md:    0 4px 16px rgba(61,43,31,.12);
+  --shadow-lg:    0 8px 32px rgba(61,43,31,.16);
+  --radius-sm:    8px;
+  --radius-md:    12px;
+  --radius-lg:    20px;
+  --nav-h:        68px;
+  --header-h:     56px;
+}
+
+/* ===== TYPOGRAPHY ===== */
+.font-title { font-family: 'Shippori Mincho', serif; }
+h1, h2 { font-family: 'Shippori Mincho', serif; }
+
+/* ===== LAYOUT ===== */
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+/* ===== HEADER ===== */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--header-h);
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.app-header__logo {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: .04em;
+  line-height: 1;
+}
+.app-header__subtitle {
+  font-size: .7rem;
+  color: var(--text-muted);
+  letter-spacing: .06em;
+}
+.app-header__week {
+  margin-left: auto;
+  font-size: .75rem;
+  color: var(--text-secondary);
+  background: var(--bg-muted);
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+/* ===== MAIN CONTENT ===== */
+.tab-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: calc(var(--nav-h) + 16px);
+  padding-top: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+.tab-pane {
+  display: none;
+  padding: 16px;
+  animation: fadeIn .2s ease;
+}
+.tab-pane.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== BOTTOM NAVIGATION ===== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  height: var(--nav-h);
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: stretch;
+  box-shadow: 0 -4px 20px rgba(61,43,31,.10);
+  z-index: 200;
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 4px;
+  color: var(--text-muted);
+  transition: color .18s ease;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 0 0 2px 2px;
+  opacity: 0;
+  transform: scaleX(0);
+  transition: opacity .18s ease, transform .18s ease;
+}
+.nav-item.active {
+  color: var(--accent);
+}
+.nav-item.active::before {
+  opacity: 1;
+  transform: scaleX(1);
+}
+.nav-item__icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .18s ease;
+}
+.nav-item.active .nav-item__icon {
+  transform: scale(1.1);
+}
+.nav-item__label {
+  font-size: .65rem;
+  font-weight: 500;
+  letter-spacing: .04em;
+}
+
+/* ===== SVG ICONS ===== */
+.icon {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 12px;
+}
+.card__title {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card__title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-light);
+}
+
+/* ===== SECTION HEADING ===== */
+.section-heading {
+  font-family: 'Shippori Mincho', serif;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin: 20px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-heading::before {
+  content: '';
+  width: 3px;
+  height: 14px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: .875rem;
+  font-weight: 500;
+  padding: 10px 20px;
+  transition: all .15s ease;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--accent-dark); }
+.btn-primary:active { transform: scale(.97); }
+.btn-secondary {
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { background: var(--border-light); }
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent-light);
+}
+.btn-ghost:hover { background: rgba(196,98,42,.06); }
+.btn-sm { font-size: .8rem; padding: 6px 14px; }
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+}
+.btn-danger {
+  background: #F5E8E4;
+  color: #B84444;
+}
+.btn-danger:hover { background: #EEDAD6; }
+
+/* ===== FORM ELEMENTS ===== */
+.form-group { margin-bottom: 14px; }
+.form-label {
+  display: block;
+  font-size: .8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+}
+.form-input, .form-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: .9rem;
+  transition: border-color .15s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.form-input:focus, .form-select:focus {
+  outline: none;
+  border-color: var(--accent-light);
+  box-shadow: 0 0 0 3px rgba(196,98,42,.12);
+}
+.form-select-wrap {
+  position: relative;
+}
+.form-select-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+  font-size: .85rem;
+}
+
+/* ===== TOGGLE ===== */
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+.toggle-label {
+  font-size: .9rem;
+  color: var(--text-primary);
+}
+.toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--border);
+  border-radius: 24px;
+  transition: background .2s;
+  cursor: pointer;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform .2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,.2);
+}
+.toggle input:checked + .toggle-slider { background: var(--accent); }
+.toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+/* ===== CHECKBOX GROUP ===== */
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.checkbox-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: .82rem;
+  color: var(--text-secondary);
+  transition: all .15s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.checkbox-chip input { display: none; }
+.checkbox-chip.checked {
+  border-color: var(--accent);
+  background: rgba(196,98,42,.08);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* ===== RADIO GROUP ===== */
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all .15s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.radio-option input { display: none; }
+.radio-dot {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: relative;
+  transition: border-color .15s;
+}
+.radio-dot::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%) scale(0);
+  transition: transform .15s;
+}
+.radio-option.checked {
+  border-color: var(--accent);
+  background: rgba(196,98,42,.05);
+}
+.radio-option.checked .radio-dot {
+  border-color: var(--accent);
+}
+.radio-option.checked .radio-dot::after {
+  transform: translate(-50%,-50%) scale(1);
+}
+.radio-option__text { font-size: .88rem; color: var(--text-primary); }
+.radio-option__desc { font-size: .75rem; color: var(--text-muted); margin-top: 1px; }
+
+/* ===== TAG / BADGE ===== */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .03em;
+}
+.tag-meat   { background: #FDECEA; color: #C0392B; }
+.tag-fish   { background: #E8F4FD; color: #2471A3; }
+.tag-veg    { background: #E9F7EF; color: #27AE60; }
+.tag-main   { background: #FEF9E7; color: #B7950B; }
+.tag-side   { background: #F4ECF7; color: #8E44AD; }
+.tag-soup   { background: #EAF2F8; color: #2E86C1; }
+.tag-allergy { background: #FDEDEC; color: #C0392B; border: 1px solid #F5B7B1; }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(61,43,31,.45);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+  backdrop-filter: blur(2px);
+}
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+.modal {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90dvh;
+  overflow-y: auto;
+  padding: 0 0 32px;
+  transform: translateY(100%);
+  transition: transform .3s cubic-bezier(.34,1.15,.64,1);
+}
+.modal-overlay.open .modal {
+  transform: translateY(0);
+}
+.modal-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 12px auto 16px;
+}
+.modal-header {
+  padding: 0 20px 16px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-title {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.modal-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-muted);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  -webkit-tap-highlight-color: transparent;
+}
+.modal-body { padding: 16px 20px; }
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed;
+  bottom: calc(var(--nav-h) + 20px);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--text-primary);
+  color: #fff;
+  font-size: .85rem;
+  padding: 10px 20px;
+  border-radius: 24px;
+  white-space: nowrap;
+  z-index: 9999;
+  opacity: 0;
+  transition: all .25s ease;
+  pointer-events: none;
+  box-shadow: var(--shadow-md);
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ===== MEMBER CHIP ===== */
+.member-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--bg-muted);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+}
+.member-chip__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .9rem;
+  color: #fff;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.member-chip__info { flex: 1; min-width: 0; }
+.member-chip__name { font-size: .9rem; font-weight: 500; color: var(--text-primary); }
+.member-chip__meta { font-size: .75rem; color: var(--text-muted); }
+
+/* ===== MEAL CARD ===== */
+.meal-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color .15s, box-shadow .15s;
+}
+.meal-card.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(196,98,42,.15), var(--shadow-sm);
+}
+.meal-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+}
+.meal-card__name {
+  font-size: .95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  flex: 1;
+}
+.meal-card__tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.meal-card__body {
+  padding: 0 14px 12px;
+  display: none;
+}
+.meal-card.expanded .meal-card__body { display: block; }
+.meal-card__ingredients {
+  font-size: .8rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ===== SHOPPING LIST ===== */
+.shop-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.shop-item:last-child { border-bottom: none; }
+.shop-check {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.shop-check.checked {
+  background: var(--success);
+  border-color: var(--success);
+}
+.shop-check.checked::after {
+  content: '✓';
+  color: #fff;
+  font-size: .75rem;
+  font-weight: 700;
+}
+.shop-item__name {
+  flex: 1;
+  font-size: .9rem;
+  color: var(--text-primary);
+  transition: color .15s;
+}
+.shop-item.checked .shop-item__name {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+.shop-item__amount {
+  font-size: .82rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.shop-item__price {
+  font-size: .82rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ===== DAY TABS ===== */
+.day-tabs {
+  display: flex;
+  overflow-x: auto;
+  gap: 6px;
+  padding-bottom: 12px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.day-tabs::-webkit-scrollbar { display: none; }
+.day-tab {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 24px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: .82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.day-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* ===== WEEK CALENDAR (まとめタブ) ===== */
+.week-grid {
+  display: grid;
+  grid-template-columns: 52px 1fr 1fr 1fr;
+  gap: 1px;
+  background: var(--border-light);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  font-size: .75rem;
+}
+.week-grid__head {
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 6px;
+  text-align: center;
+  font-weight: 500;
+}
+.week-grid__day-label {
+  background: var(--bg-muted);
+  padding: 8px 6px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.week-grid__cell {
+  background: var(--bg-card);
+  padding: 6px;
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.week-grid__meal-name {
+  font-size: .68rem;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+/* ===== BUDGET BAR ===== */
+.budget-bar {
+  background: var(--bg-muted);
+  border-radius: 8px;
+  height: 10px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+.budget-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-light), var(--accent));
+  border-radius: 8px;
+  transition: width .6s cubic-bezier(.34,1.15,.64,1);
+}
+.budget-bar__fill.over { background: linear-gradient(90deg, #E8916A, #C0392B); }
+
+/* ===== BANNER ===== */
+.banner {
+  background: linear-gradient(135deg, #FFF3EB, #FDE8D8);
+  border: 1.5px solid var(--accent-light);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.banner__icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.banner__body {}
+.banner__title {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--accent-dark);
+  margin-bottom: 4px;
+}
+.banner__text { font-size: .8rem; color: var(--text-secondary); line-height: 1.5; }
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+}
+.empty-state__icon { font-size: 3rem; margin-bottom: 12px; }
+.empty-state__text { font-size: .9rem; line-height: 1.6; }
+
+/* ===== DIVIDER ===== */
+.divider {
+  height: 1px;
+  background: var(--border-light);
+  margin: 12px 0;
+}
+
+/* ===== AMOUNT BADGE ===== */
+.amount-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+}
+.amount-badge__num {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.amount-badge__unit { font-size: .8rem; color: var(--text-secondary); }
+
+/* ===== RESPONSIVE ===== */
+@media (min-width: 480px) {
+  body { box-shadow: 0 0 40px rgba(0,0,0,.1); }
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ===== UTILITY ===== */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+.mt-4 { margin-top: 4px; }
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mb-8 { margin-bottom: 8px; }
+.text-sm { font-size: .82rem; }
+.text-xs { font-size: .72rem; }
+.text-muted { color: var(--text-muted); }
+.text-accent { color: var(--accent); }
+.text-right { text-align: right; }
+.w-full { width: 100%; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== HEADER ===== -->
+  <header class="app-header">
+    <div>
+      <div class="app-header__logo">めぐり</div>
+      <div class="app-header__subtitle">週間献立 &amp; 買い物</div>
+    </div>
+    <div class="app-header__week" id="headerWeek">— 週を選択 —</div>
+  </header>
+
+  <!-- ===== TAB CONTENT ===== -->
+  <main class="tab-content">
+
+    <!-- ① 設定タブ -->
+    <section class="tab-pane active" id="pane-settings">
+
+      <!-- 家族構成 -->
+      <div class="card">
+        <div class="card__title">家族構成</div>
+        <div id="memberList"><!-- JS で描画 --></div>
+        <button class="btn btn-ghost w-full mt-8" onclick="openModal('modal-member')">
+          ＋ メンバーを追加
+        </button>
+      </div>
+
+      <!-- 朝食スタイル -->
+      <div class="card">
+        <div class="card__title">朝食スタイル</div>
+        <div class="radio-group" id="breakfastStyleGroup">
+          <label class="radio-option checked" data-val="japanese">
+            <input type="radio" name="breakfastStyle" value="japanese" checked>
+            <span class="radio-dot"></span>
+            <span>
+              <div class="radio-option__text">和食</div>
+              <div class="radio-option__desc">ごはん・みそ汁・たまご・納豆</div>
+            </span>
+          </label>
+          <label class="radio-option" data-val="western">
+            <input type="radio" name="breakfastStyle" value="western">
+            <span class="radio-dot"></span>
+            <span>
+              <div class="radio-option__text">洋食</div>
+              <div class="radio-option__desc">食パン・たまご・牛乳・ヨーグルト</div>
+            </span>
+          </label>
+          <label class="radio-option" data-val="mixed">
+            <input type="radio" name="breakfastStyle" value="mixed">
+            <span class="radio-dot"></span>
+            <span>
+              <div class="radio-option__text">混合</div>
+              <div class="radio-option__desc">偶数日＝和食、奇数日＝洋食</div>
+            </span>
+          </label>
+          <label class="radio-option" data-val="none">
+            <input type="radio" name="breakfastStyle" value="none">
+            <span class="radio-dot"></span>
+            <span>
+              <div class="radio-option__text">なし</div>
+              <div class="radio-option__desc">朝食は買い物リストに含めない</div>
+            </span>
+          </label>
+        </div>
+        <div class="divider"></div>
+        <div class="toggle-wrap">
+          <span class="toggle-label">朝食食材を買い物リストに含める</span>
+          <label class="toggle">
+            <input type="checkbox" id="breakfastInShop" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 晩ごはん構成 -->
+      <div class="card">
+        <div class="card__title">晩ごはん構成</div>
+        <div class="radio-group" id="dinnerStructGroup">
+          <label class="radio-option checked" data-val="main1">
+            <input type="radio" name="dinnerStruct" value="main1" checked>
+            <span class="radio-dot"></span>
+            <span>
+              <div class="radio-option__text">主菜のみ</div>
+            </span>
+          </label>
+          <label class="radio-option" data-val="main1side1">
+            <input type="radio" name="dinnerStruct" value="main1side1">
+            <span class="radio-dot"></span>
+            <span>
+              <div class="radio-option__text">主菜 ＋ 副菜 1品</div>
+            </span>
+          </label>
+          <label class="radio-option" data-val="main1side2">
+            <input type="radio" name="dinnerStruct" value="main1side2">
+            <span class="radio-dot"></span>
+            <span>
+              <div class="radio-option__text">主菜 ＋ 副菜 2品</div>
+            </span>
+          </label>
+          <label class="radio-option" data-val="side1">
+            <input type="radio" name="dinnerStruct" value="side1">
+            <span class="radio-dot"></span>
+            <span>
+              <div class="radio-option__text">副菜のみ</div>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 買い物曜日 -->
+      <div class="card">
+        <div class="card__title">買い物曜日</div>
+        <p class="text-sm text-muted mb-8">週1〜3回選択してください</p>
+        <div class="checkbox-group" id="shopDaysGroup">
+          <span class="checkbox-chip" data-val="1">月</span>
+          <span class="checkbox-chip" data-val="2">火</span>
+          <span class="checkbox-chip" data-val="3">水</span>
+          <span class="checkbox-chip" data-val="4">木</span>
+          <span class="checkbox-chip" data-val="5">金</span>
+          <span class="checkbox-chip" data-val="6">土</span>
+          <span class="checkbox-chip" data-val="0">日</span>
+        </div>
+        <p class="text-xs text-muted mt-8" id="shopDaysHint"></p>
+      </div>
+
+      <!-- メインスーパー -->
+      <div class="card">
+        <div class="card__title">メインスーパー</div>
+        <div class="checkbox-group" id="supermarketGroup">
+          <label class="checkbox-chip" data-val="life">ライフ</label>
+          <label class="checkbox-chip" data-val="aeon">イオン</label>
+          <label class="checkbox-chip" data-val="seiyu">西友</label>
+          <label class="checkbox-chip" data-val="coop">コープ</label>
+          <label class="checkbox-chip" data-val="gyomu">業務スーパー</label>
+          <label class="checkbox-chip" data-val="ito">イトーヨーカドー</label>
+          <label class="checkbox-chip" data-val="kansai">関西スーパー</label>
+          <label class="checkbox-chip" data-val="bandai">万代</label>
+          <label class="checkbox-chip" data-val="maruhachi">マルハチ</label>
+        </div>
+      </div>
+
+      <!-- 週合計予算 -->
+      <div class="card">
+        <div class="card__title">週合計予算</div>
+        <div class="form-group">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="number" class="form-input" id="weekBudget" placeholder="例: 8000" min="0" step="500" style="flex:1;">
+            <span class="text-sm text-muted" style="white-space:nowrap;">円 / 週</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 食事量係数（情報表示） -->
+      <div class="card">
+        <div class="card__title">食事量係数（参考）</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;" class="text-sm">
+          <div style="padding:6px 10px;background:var(--bg-muted);border-radius:6px;">大人（男）<span style="float:right;color:var(--accent);font-weight:600;">×1.0</span></div>
+          <div style="padding:6px 10px;background:var(--bg-muted);border-radius:6px;">大人（女）<span style="float:right;color:var(--accent);font-weight:600;">×0.85</span></div>
+          <div style="padding:6px 10px;background:var(--bg-muted);border-radius:6px;">中高生（男）<span style="float:right;color:var(--accent);font-weight:600;">×1.1</span></div>
+          <div style="padding:6px 10px;background:var(--bg-muted);border-radius:6px;">中高生（女）<span style="float:right;color:var(--accent);font-weight:600;">×0.95</span></div>
+          <div style="padding:6px 10px;background:var(--bg-muted);border-radius:6px;">小学生（男）<span style="float:right;color:var(--accent);font-weight:600;">×0.7</span></div>
+          <div style="padding:6px 10px;background:var(--bg-muted);border-radius:6px;">小学生（女）<span style="float:right;color:var(--accent);font-weight:600;">×0.6</span></div>
+          <div style="padding:6px 10px;background:var(--bg-muted);border-radius:6px;grid-column:1/-1;">幼児<span style="float:right;color:var(--text-muted);">案内のみ</span></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ② 献立タブ -->
+    <section class="tab-pane" id="pane-menu">
+
+      <!-- 調味料ピックアップバナー -->
+      <div id="seasoningBanner" class="banner" style="display:none">
+        <div class="banner__icon">🧂</div>
+        <div class="banner__body">
+          <div class="banner__title">今週使う調味料（参考）</div>
+          <div class="banner__text" id="seasoningList"></div>
+        </div>
+      </div>
+
+      <!-- アクションバー -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button class="btn btn-primary" style="flex:1" onclick="Menu.generate()">今週の献立を生成</button>
+        <button class="btn btn-secondary btn-sm" onclick="Menu.reset()">リセット</button>
+      </div>
+
+      <!-- 曜日タブ -->
+      <div class="day-tabs" id="menuDayTabs"></div>
+
+      <!-- 日ごと献立コンテンツ -->
+      <div id="menuDayContent"></div>
+
+    </section>
+
+    <!-- ③ 買い物タブ -->
+    <section class="tab-pane" id="pane-shop">
+
+      <!-- 予算サマリーカード -->
+      <div class="card" id="shopBudgetCard" style="display:none"></div>
+
+      <!-- 注意バナー：献立未生成 -->
+      <div class="banner" id="shopNoBanner" style="display:none">
+        <div class="banner__icon">💡</div>
+        <div class="banner__body">
+          <div class="banner__title">献立を先に生成してください</div>
+          <div class="banner__text">献立タブで今週の献立を生成すると<br>買い物リストが自動で作成されます</div>
+        </div>
+      </div>
+
+      <!-- 買い物曜日タブ -->
+      <div class="day-tabs" id="shopDayTabs"></div>
+
+      <!-- リスト操作バー -->
+      <div style="display:flex;justify-content:flex-end;margin-bottom:8px;" id="shopActionBar">
+        <button class="btn btn-secondary btn-sm" onclick="Shop.clearChecks()">チェックをリセット</button>
+      </div>
+
+      <!-- 買い物リスト本体 -->
+      <div id="shopListContent"></div>
+
+    </section>
+
+    <!-- ④ まとめタブ -->
+    <section class="tab-pane" id="pane-summary">
+
+      <!-- 週ヘッダー -->
+      <div class="card" style="background:linear-gradient(135deg,#FFF3EB,#FDE8D8);border-color:var(--accent-light);">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-family:'Shippori Mincho',serif;font-size:1.1rem;font-weight:700;color:var(--accent-dark);">今週の献立まとめ</div>
+            <div class="text-xs text-muted" id="summaryWeekLabel" style="margin-top:3px;"></div>
+          </div>
+          <div id="summaryCatStats" style="display:flex;gap:6px;"></div>
+        </div>
+      </div>
+
+      <!-- 予算実績カード -->
+      <div class="card" id="summaryBudgetCard">
+        <div class="card__title">予算・実績</div>
+        <div id="summaryBudget"></div>
+      </div>
+
+      <!-- 週カレンダー -->
+      <div class="card">
+        <div class="card__title">献立カレンダー</div>
+        <div id="summaryCalendar"></div>
+      </div>
+
+      <!-- 使用調味料 -->
+      <div class="card">
+        <div class="card__title">今週使う調味料</div>
+        <div id="summarySeasonings"></div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ===== BOTTOM NAVIGATION ===== -->
+  <nav class="bottom-nav" role="navigation" aria-label="メインナビ">
+    <button class="nav-item active" data-tab="settings" aria-label="設定">
+      <span class="nav-item__icon">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </span>
+      <span class="nav-item__label">設定</span>
+    </button>
+
+    <button class="nav-item" data-tab="menu" aria-label="献立">
+      <span class="nav-item__icon">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
+          <path d="M7 2v20"/>
+          <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+        </svg>
+      </span>
+      <span class="nav-item__label">献立</span>
+    </button>
+
+    <button class="nav-item" data-tab="shop" aria-label="買い物">
+      <span class="nav-item__icon">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+      </span>
+      <span class="nav-item__label">買い物</span>
+    </button>
+
+    <button class="nav-item" data-tab="summary" aria-label="まとめ">
+      <span class="nav-item__icon">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+      </span>
+      <span class="nav-item__label">まとめ</span>
+    </button>
+  </nav>
+
+</div>
+
+<!-- ===== MODAL: メンバー追加 ===== -->
+<div class="modal-overlay" id="modal-member" role="dialog" aria-modal="true" aria-labelledby="modal-member-title">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title" id="modal-member-title">メンバーを追加</span>
+      <button class="modal-close" onclick="closeModal('modal-member')" aria-label="閉じる">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="mName">名前</label>
+        <input class="form-input" id="mName" type="text" placeholder="例：お母さん" maxlength="20">
+      </div>
+      <div class="form-group">
+        <label class="form-label">年齢区分</label>
+        <div class="radio-group" id="mAgeGroup" style="gap:6px;">
+          <label class="radio-option checked" data-val="adult" style="padding:8px 12px;">
+            <input type="radio" name="mAge" value="adult" checked>
+            <span class="radio-dot"></span>
+            <span class="radio-option__text">大人</span>
+          </label>
+          <label class="radio-option" data-val="junior" style="padding:8px 12px;">
+            <input type="radio" name="mAge" value="junior">
+            <span class="radio-dot"></span>
+            <span class="radio-option__text">中高生</span>
+          </label>
+          <label class="radio-option" data-val="elementary" style="padding:8px 12px;">
+            <input type="radio" name="mAge" value="elementary">
+            <span class="radio-dot"></span>
+            <span class="radio-option__text">小学生</span>
+          </label>
+          <label class="radio-option" data-val="toddler" style="padding:8px 12px;">
+            <input type="radio" name="mAge" value="toddler">
+            <span class="radio-dot"></span>
+            <span class="radio-option__text">幼児</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">性別</label>
+        <div style="display:flex;gap:8px;">
+          <label class="radio-option checked" data-val="female" id="mGenderF" style="flex:1;padding:8px 12px;">
+            <input type="radio" name="mGender" value="female" checked>
+            <span class="radio-dot"></span>
+            <span class="radio-option__text">女</span>
+          </label>
+          <label class="radio-option" data-val="male" id="mGenderM" style="flex:1;padding:8px 12px;">
+            <input type="radio" name="mGender" value="male">
+            <span class="radio-dot"></span>
+            <span class="radio-option__text">男</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="mAllergy">アレルギー食材（カンマ区切り）</label>
+        <input class="form-input" id="mAllergy" type="text" placeholder="例：卵, 乳製品, 小麦">
+      </div>
+      <button class="btn btn-primary w-full" onclick="Settings.saveMember()">追加する</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: 料理差し替え ===== -->
+<div class="modal-overlay" id="modal-swap" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title" id="swapModalTitle">料理を差し替える</span>
+      <button class="modal-close" onclick="closeModal('modal-swap')" aria-label="閉じる">✕</button>
+    </div>
+    <div class="modal-body" id="swapModalBody"></div>
+  </div>
+</div>
+
+<!-- ===== MODAL: レシピ ===== -->
+<div class="modal-overlay" id="modal-recipe" role="dialog" aria-modal="true" aria-labelledby="modal-recipe-title">
+  <div class="modal" style="max-height:85vh;display:flex;flex-direction:column;">
+    <div class="modal-handle"></div>
+    <div class="modal-header" style="flex-shrink:0;">
+      <span class="modal-title" id="modal-recipe-title">レシピ</span>
+      <button class="modal-close" onclick="closeModal('modal-recipe')" aria-label="閉じる">✕</button>
+    </div>
+    <div class="modal-body" id="recipeModalBody" style="overflow-y:auto;flex:1;"></div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ===========================
+   APP CORE — ナビゲーション / Toast / ユーティリティ
+   =========================== */
+
+// ---- ナビゲーション ----
+const navItems = document.querySelectorAll('.nav-item');
+const tabPanes = document.querySelectorAll('.tab-pane');
+
+function switchTab(tabName) {
+  navItems.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tabName);
+  });
+  tabPanes.forEach(pane => {
+    pane.classList.toggle('active', pane.id === `pane-${tabName}`);
+  });
+}
+
+navItems.forEach(btn => {
+  btn.addEventListener('click', () => {
+    switchTab(btn.dataset.tab);
+    if (btn.dataset.tab === 'shop')    Shop.renderAll();
+    if (btn.dataset.tab === 'summary') Summary.renderAll();
+  });
+});
+
+// ---- Toast ----
+let toastTimer = null;
+function showToast(msg, duration = 2500) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), duration);
+}
+
+// ---- モーダル ----
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('modal-overlay')) {
+    e.target.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+});
+
+// ---- レシピモーダル ----
+const COEF = { adult_male:1.0, adult_female:0.85, junior_male:1.1, junior_female:0.95,
+               elementary_male:0.7, elementary_female:0.6, toddler:0 };
+const TYPE_LABEL = { main:'主菜', side:'副菜', soup:'汁物' };
+const CAT_LABEL_RECIPE = { meat:'肉', fish:'魚・海鮮', veg:'野菜・豆腐' };
+
+function openRecipe(dishId) {
+  const dish = DISH_MASTER.find(d => d.id === dishId);
+  if (!dish) return;
+
+  const members = Store.get('meguri_family', []);
+  let totalCoef = members.reduce((s, m) => {
+    const key = `${m.age}_${m.gender}`;
+    return s + (COEF[key] ?? 1.0);
+  }, 0);
+  if (totalCoef === 0) totalCoef = 4.0;
+  const scale = totalCoef / 4.0;
+
+  const catCls = dish.category === 'meat' ? 'tag-meat' : dish.category === 'fish' ? 'tag-fish' : 'tag-veg';
+  const catLabel = CAT_LABEL_RECIPE[dish.category] || dish.category;
+  const typeLabel = TYPE_LABEL[dish.type] || dish.type;
+
+  const allergenHtml = dish.allergens.length
+    ? `<div style="margin-top:8px;padding:8px 10px;background:#FFF3EB;border-radius:8px;font-size:.78rem;color:#B45309;">
+        ⚠ アレルゲン: ${dish.allergens.join('・')}
+       </div>` : '';
+
+  const ingRows = dish.ingredients.map(ing => {
+    const scaled = ing.amount * scale;
+    const disp = scaled < 1 ? scaled.toFixed(2).replace(/\.?0+$/, '') :
+                 scaled % 1 === 0 ? scaled.toFixed(0) : scaled.toFixed(1);
+    return `<tr>
+      <td style="padding:6px 8px;border-bottom:1px solid #F0E8E0;">${ing.name}</td>
+      <td style="padding:6px 8px;border-bottom:1px solid #F0E8E0;text-align:right;font-weight:600;">${disp} ${ing.unit}</td>
+    </tr>`;
+  }).join('');
+
+  const stepsHtml = dish.steps.length
+    ? dish.steps.map((s, i) => `
+        <div style="display:flex;gap:12px;margin-bottom:12px;align-items:flex-start;">
+          <div style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;
+               font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;">${i+1}</div>
+          <div style="line-height:1.6;font-size:.9rem;">${s}</div>
+        </div>`).join('')
+    : '<div style="color:var(--text-muted);font-size:.85rem;">手順は登録されていません。</div>';
+
+  const personNote = members.length
+    ? `${members.length}人分（係数 ${scale.toFixed(2)}倍）`
+    : '4人分（基準）';
+
+  let sauceHtml = '';
+  if (dish.sauce) {
+    const sauceRows = dish.sauce.ings.map(([n, a, u]) => {
+      const scaled = a * scale;
+      const disp = scaled % 1 === 0 ? scaled.toFixed(0) : scaled.toFixed(1);
+      return `<tr>
+        <td style="padding:6px 8px;border-bottom:1px solid #F5D5BC;">${n}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid #F5D5BC;text-align:right;font-weight:600;">${disp} ${u}</td>
+      </tr>`;
+    }).join('');
+    const sauceStepsHtml = dish.sauce.steps.map((s, i) => `
+      <div style="display:flex;gap:10px;margin-bottom:8px;align-items:flex-start;">
+        <div style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--accent-light);color:#fff;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;">${i+1}</div>
+        <div style="line-height:1.6;font-size:.88rem;">${s}</div>
+      </div>`).join('');
+    sauceHtml = `
+    <div style="margin-top:18px;padding:14px;background:#FFF3EB;border-radius:10px;border:1.5px solid #F5D5BC;">
+      <div style="font-weight:700;margin-bottom:10px;color:var(--accent-dark);display:flex;align-items:center;gap:6px;">
+        <span style="font-size:1.1rem;">🍶</span>${dish.sauce.name}
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:.88rem;margin-bottom:10px;">
+        <tbody>${sauceRows}</tbody>
+      </table>
+      ${sauceStepsHtml}
+    </div>`;
+  }
+
+  document.getElementById('modal-recipe-title').textContent = dish.name;
+  document.getElementById('recipeModalBody').innerHTML = `
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap;">
+      <span class="tag ${catCls}">${catLabel} / ${typeLabel}</span>
+      <span style="font-size:.82rem;color:var(--text-muted);">⏱ 調理時間: <strong>${dish.time}分</strong></span>
+    </div>
+    ${allergenHtml}
+    <div style="margin-top:14px;">
+      <div style="font-weight:700;margin-bottom:8px;color:var(--accent-dark);">材料（${personNote}）</div>
+      <table style="width:100%;border-collapse:collapse;font-size:.88rem;">
+        <tbody>${ingRows}</tbody>
+      </table>
+    </div>
+    <div style="margin-top:18px;">
+      <div style="font-weight:700;margin-bottom:12px;color:var(--accent-dark);">手順</div>
+      ${stepsHtml}
+    </div>
+    ${sauceHtml}`;
+  openModal('modal-recipe');
+}
+
+// ---- localStorage ヘルパー ----
+const Store = {
+  get(key, fallback = null) {
+    try {
+      const v = localStorage.getItem(key);
+      return v ? JSON.parse(v) : fallback;
+    } catch { return fallback; }
+  },
+  set(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+  }
+};
+
+// ---- 日付ユーティリティ ----
+const DAY_NAMES_JA = ['日','月','火','水','木','金','土'];
+const DAY_NAMES_EN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function getWeekDates(baseDate = new Date()) {
+  const d = new Date(baseDate);
+  const day = d.getDay();
+  const monday = new Date(d);
+  monday.setDate(d.getDate() - ((day + 6) % 7));
+  return Array.from({length: 7}, (_, i) => {
+    const dt = new Date(monday);
+    dt.setDate(monday.getDate() + i);
+    return dt;
+  });
+}
+
+function formatDate(d) {
+  return `${d.getMonth()+1}/${d.getDate()}`;
+}
+
+function updateHeaderWeek() {
+  const dates = getWeekDates();
+  const el = document.getElementById('headerWeek');
+  if (el) {
+    el.textContent = `${formatDate(dates[0])}〜${formatDate(dates[6])}`;
+  }
+}
+
+// ---- 初期化 ----
+updateHeaderWeek();
+
+/* ===========================
+   SETTINGS MODULE
+   =========================== */
+const Settings = (() => {
+
+  // ---- 定数 ----
+  const AGE_LABEL = { adult:'大人', junior:'中高生', elementary:'小学生', toddler:'幼児' };
+  const GENDER_LABEL = { male:'男', female:'女' };
+  const PORTION = {
+    adult_male:1.0, adult_female:0.85,
+    junior_male:1.1, junior_female:0.95,
+    elementary_male:0.7, elementary_female:0.6,
+    toddler_male:null, toddler_female:null
+  };
+  const MAX_SHOP_DAYS = 3;
+
+  // ---- state ----
+  let members  = Store.get('meguri_family', []);
+  let settings = Store.get('meguri_settings', {
+    breakfastStyle: 'japanese',
+    breakfastInShop: true,
+    dinnerStruct: 'main1',
+    shopDays: [],
+    supermarket: '',
+    weekBudget: 0
+  });
+
+  // ---- メンバー一覧描画 ----
+  function renderMembers() {
+    const el = document.getElementById('memberList');
+    if (!el) return;
+    if (!members.length) {
+      el.innerHTML = '<p class="text-sm text-muted" style="padding:8px 0;">まだメンバーがいません</p>';
+      return;
+    }
+    el.innerHTML = members.map((m, i) => {
+      const allergyTags = (m.allergies || []).map(a =>
+        `<span class="tag tag-allergy">${a}</span>`).join('');
+      const initial = (m.name || '?').charAt(0);
+      const avatarColors = ['#C4622A','#E8916A','#6B8C5A','#C49A2A','#7B5EA7'];
+      const color = avatarColors[i % avatarColors.length];
+      return `
+      <div class="member-chip">
+        <div class="member-chip__avatar" style="background:${color}">${initial}</div>
+        <div class="member-chip__info">
+          <div class="member-chip__name">${m.name}</div>
+          <div class="member-chip__meta">${AGE_LABEL[m.age] || m.age} ・ ${GENDER_LABEL[m.gender] || m.gender}
+            ${m.allergies && m.allergies.length ? ' ・ ' + allergyTags : ''}
+          </div>
+        </div>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="Settings.removeMember(${i})" aria-label="${m.name}を削除">✕</button>
+      </div>`;
+    }).join('');
+  }
+
+  // ---- メンバー追加 ----
+  function saveMember() {
+    const name    = document.getElementById('mName').value.trim();
+    const age     = document.querySelector('#mAgeGroup .radio-option.checked')?.dataset.val || 'adult';
+    const gender  = document.querySelector('[name="mGender"]:checked')?.value || 'female';
+    const allergy = document.getElementById('mAllergy').value.trim();
+    if (!name) { showToast('名前を入力してください'); return; }
+    const allergies = allergy ? allergy.split(/[,、，\s]+/).map(s=>s.trim()).filter(Boolean) : [];
+    members.push({ name, age, gender, allergies });
+    Store.set('meguri_family', members);
+    renderMembers();
+    closeModal('modal-member');
+    resetMemberForm();
+    showToast(`${name} を追加しました`);
+  }
+
+  function removeMember(i) {
+    const name = members[i]?.name || 'メンバー';
+    members.splice(i, 1);
+    Store.set('meguri_family', members);
+    renderMembers();
+    showToast(`${name} を削除しました`);
+  }
+
+  function resetMemberForm() {
+    document.getElementById('mName').value = '';
+    document.getElementById('mAllergy').value = '';
+    setRadio('mAgeGroup', 'adult');
+    document.querySelectorAll('[name="mGender"]').forEach(r => { r.checked = r.value === 'female'; });
+    document.querySelectorAll('#modal-member [name="mGender"]').forEach(lbl => {
+      if (lbl.tagName === 'LABEL') lbl.classList.toggle('checked', lbl.dataset.val === 'female');
+    });
+    syncRadioLabels(document.getElementById('mAgeGroup'));
+    syncRadioLabels(document.querySelector('#modal-member [style*="display:flex"]'));
+  }
+
+  // ---- ラジオ同期ヘルパー ----
+  function setRadio(groupId, val) {
+    const group = document.getElementById(groupId);
+    if (!group) return;
+    group.querySelectorAll('.radio-option').forEach(opt => {
+      const checked = opt.dataset.val === val;
+      opt.classList.toggle('checked', checked);
+      const input = opt.querySelector('input[type=radio]');
+      if (input) input.checked = checked;
+    });
+  }
+
+  function syncRadioLabels(container) {
+    if (!container) return;
+    container.querySelectorAll('.radio-option').forEach(opt => {
+      const input = opt.querySelector('input[type=radio]');
+      if (input) opt.classList.toggle('checked', input.checked);
+    });
+  }
+
+  // ---- 設定UI初期化 ----
+  function initUI() {
+    // ラジオグループクリックハンドラ
+    document.querySelectorAll('.radio-group, [style*="display:flex"]').forEach(group => {
+      group.addEventListener('click', e => {
+        const opt = e.target.closest('.radio-option');
+        if (!opt) return;
+        const parent = opt.closest('.radio-group') || opt.parentElement;
+        parent.querySelectorAll('.radio-option').forEach(o => o.classList.remove('checked'));
+        opt.classList.add('checked');
+        const input = opt.querySelector('input[type=radio]');
+        if (input) { input.checked = true; saveSettings(); }
+      });
+    });
+
+    // 買い物曜日チップ
+    document.querySelectorAll('#shopDaysGroup .checkbox-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const val = Number(chip.dataset.val);
+        const shopDays = settings.shopDays || [];
+        const isChecked = shopDays.includes(val);
+        if (!isChecked && shopDays.length >= MAX_SHOP_DAYS) {
+          showToast(`買い物日は最大${MAX_SHOP_DAYS}日まで`);
+          return;
+        }
+        if (isChecked) {
+          settings.shopDays = shopDays.filter(d => d !== val);
+          chip.classList.remove('checked');
+        } else {
+          settings.shopDays = [...shopDays, val];
+          chip.classList.add('checked');
+        }
+        Store.set('meguri_settings', settings);
+        updateShopDaysHint();
+      });
+    });
+
+    // スーパー（単一選択）
+    document.querySelectorAll('#supermarketGroup .checkbox-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('#supermarketGroup .checkbox-chip').forEach(c => c.classList.remove('checked'));
+        chip.classList.add('checked');
+        saveSettings();
+      });
+    });
+
+    // トグル
+    document.getElementById('breakfastInShop')?.addEventListener('change', saveSettings);
+
+    // 予算
+    document.getElementById('weekBudget')?.addEventListener('change', saveSettings);
+
+    // 保存済み値を反映
+    loadSavedSettings();
+  }
+
+  function loadSavedSettings() {
+    const s = settings;
+    setRadio('breakfastStyleGroup', s.breakfastStyle || 'japanese');
+    setRadio('dinnerStructGroup', s.dinnerStruct || 'main1');
+
+    const tog = document.getElementById('breakfastInShop');
+    if (tog) tog.checked = s.breakfastInShop !== false;
+
+    const budget = document.getElementById('weekBudget');
+    if (budget && s.weekBudget) budget.value = s.weekBudget;
+
+    // 買い物曜日
+    const shopDays = s.shopDays || [];
+    document.querySelectorAll('#shopDaysGroup .checkbox-chip').forEach(chip => {
+      if (shopDays.includes(Number(chip.dataset.val))) chip.classList.add('checked');
+    });
+    updateShopDaysHint();
+
+    // スーパー
+    if (s.supermarket) {
+      const sc = document.querySelector(`#supermarketGroup [data-val="${s.supermarket}"]`);
+      if (sc) sc.classList.add('checked');
+    }
+  }
+
+  function saveSettings() {
+    settings.breakfastStyle = document.querySelector('#breakfastStyleGroup .radio-option.checked')?.dataset.val || 'japanese';
+    settings.breakfastInShop = document.getElementById('breakfastInShop')?.checked ?? true;
+    settings.dinnerStruct = document.querySelector('#dinnerStructGroup .radio-option.checked')?.dataset.val || 'main1';
+    // shopDays は settings オブジェクトで直接管理するためここでは上書きしない
+    settings.supermarket = document.querySelector('#supermarketGroup .checkbox-chip.checked')?.dataset.val || '';
+    settings.weekBudget = Number(document.getElementById('weekBudget')?.value) || 0;
+    Store.set('meguri_settings', settings);
+  }
+
+  function updateShopDaysHint() {
+    const DAY = ['日','月','火','水','木','金','土'];
+    const sel = [...document.querySelectorAll('#shopDaysGroup .checkbox-chip.checked')]
+      .map(c => DAY[Number(c.dataset.val)]);
+    const el = document.getElementById('shopDaysHint');
+    if (!el) return;
+    el.textContent = sel.length ? `選択中：${sel.join('・')}曜日（${sel.length}/${MAX_SHOP_DAYS}）` : '曜日を選択してください（最大3日）';
+  }
+
+  // ---- モーダル内ラジオ（モバイル対応） ----
+  function initModalRadios() {
+    document.getElementById('mAgeGroup')?.addEventListener('click', e => {
+      const opt = e.target.closest('.radio-option');
+      if (!opt) return;
+      document.querySelectorAll('#mAgeGroup .radio-option').forEach(o => o.classList.remove('checked'));
+      opt.classList.add('checked');
+    });
+    document.querySelectorAll('[name="mGender"]').forEach(radio => {
+      radio.closest('.radio-option')?.addEventListener('click', () => {
+        document.querySelectorAll('#modal-member .radio-option[data-val]').forEach(o => {
+          if (o.querySelector('[name="mGender"]')) o.classList.remove('checked');
+        });
+        radio.closest('.radio-option').classList.add('checked');
+      });
+    });
+  }
+
+  // ---- 公開API ----
+  return { saveMember, removeMember, getSettings: () => settings, init() {
+    renderMembers();
+    initUI();
+    initModalRadios();
+  }};
+})();
+
+Settings.init();
+
+/* ===========================
+   DISH MASTER — 100品
+   =========================== */
+const DISH_MASTER = (function() {
+  // time=調理時間(分)  steps=手順配列
+  function d(id, name, cat, type, ings, seasonings, allergens, time, steps) {
+    return { id, name, category: cat, type,
+      ingredients: ings.map(([n,a,u,f]) => ({ name:n, amount:a, unit:u, freshness: f||'high' })),
+      seasonings: seasonings || [], allergens: allergens || [],
+      time: time || 20, steps: steps || [], sauce: null };
+  }
+  return [
+    /* ==== 肉・主菜 (1-20) ==== */
+    d(1,'鶏のから揚げ','meat','main',[['鶏もも肉',300,'g'],['しょうが',10,'g'],['にんにく',1,'片'],['片栗粉',30,'g','low']],['醤油','みりん','酒'],['大豆','小麦'],30,['鶏もも肉を一口大に切り、醤油・みりん・酒・すりおろしょうが・にんにくで15分漬ける。','片栗粉をまぶし、180℃の油で4〜5分揚げる。','油をきって盛り付ける。']),
+    d(2,'豚の生姜焼き','meat','main',[['豚ロース薄切り',250,'g'],['玉ねぎ',0.5,'個'],['しょうが',15,'g']],['醤油','みりん','酒','砂糖'],['大豆'],15,['豚ロースを食べやすい大きさに切り、玉ねぎを薄切りにする。','フライパンに油を熱し豚肉を炒め、玉ねぎを加える。','醤油・みりん・酒・砂糖・すりおろしょうがを加えて炒め絡める。']),
+    d(3,'鶏むね肉の照り焼き','meat','main',[['鶏むね肉',280,'g'],['にんにく',1,'片']],['醤油','みりん','酒','砂糖'],['大豆'],20,['鶏むね肉は厚みを均一にして塩こしょうし、薄力粉を薄くまぶす。','フライパンに油を熱し皮目から焼き、蓋をして蒸し焼きにする。','醤油・みりん・酒・砂糖のタレを加えて照り焼きにする。']),
+    d(4,'ポークソテー','meat','main',[['豚ロース厚切り',250,'g'],['にんにく',1,'片'],['バター',10,'g','low']],['塩','こしょう','醤油'],['乳'],15,['豚ロースは筋切りして塩こしょうをする。','フライパンにバターを熱し豚肉を両面焼く。','にんにくを加えて醤油を回しかけて仕上げる。']),
+    d(5,'牛肉と野菜の炒め物','meat','main',[['牛こま切れ肉',200,'g'],['ピーマン',2,'個'],['玉ねぎ',0.5,'個'],['にんにく',1,'片']],['醤油','みりん','オイスターソース','ごま油'],['大豆'],15,['牛肉・ピーマン・玉ねぎを食べやすく切る。','フライパンに油を熱し牛肉を炒め、野菜を加える。','醤油・みりん・オイスターソース・ごま油で味付けする。']),
+    d(6,'鶏肉のクリーム煮','meat','main',[['鶏もも肉',300,'g'],['しめじ',1,'パック'],['玉ねぎ',0.5,'個'],['生クリーム',100,'ml','low']],['塩','こしょう','白ワイン','バター'],['乳'],25,['鶏もも肉を一口大に切り、塩こしょうをする。','バターで鶏肉を焼き、玉ねぎ・しめじを加えて炒める。','白ワインと生クリームを加えて煮詰め、塩こしょうで味を整える。']),
+    d(7,'豚バラ大根煮','meat','main',[['豚バラ薄切り',200,'g'],['大根',300,'g'],['しょうが',10,'g']],['醤油','みりん','酒','砂糖'],['大豆'],35,['大根は厚めに切って下茹でする。','鍋に豚バラを炒め、大根・しょうがを加える。','醤油・みりん・酒・砂糖を加え、落し蓋をして20分煮る。']),
+    d(8,'鶏の南蛮漬け','meat','main',[['鶏もも肉',300,'g'],['玉ねぎ',0.5,'個'],['にんじん',0.5,'本'],['片栗粉',20,'g','low']],['醤油','酢','砂糖','みりん'],['大豆','小麦'],25,['鶏もも肉に醤油・酒で下味をつけ片栗粉をまぶして揚げる。','甘酢（醤油・酢・砂糖・みりん）を合わせる。','揚げた鶏肉と薄切り野菜を甘酢に漬ける。']),
+    d(9,'ハンバーグ','meat','main',[['合いびき肉',300,'g'],['玉ねぎ',0.5,'個'],['たまご',1,'個'],['パン粉',30,'g','low']],['塩','こしょう','ナツメグ','ケチャップ','ウスターソース'],['小麦','卵','乳'],30,['玉ねぎをみじん切りにして炒め冷ます。','ひき肉・玉ねぎ・卵・パン粉・塩こしょう・ナツメグを混ぜて成形する。','フライパンで両面焼き、ケチャップ・ウスターソースのソースをかける。']),
+    d(10,'豚のみそ炒め','meat','main',[['豚バラ薄切り',200,'g'],['キャベツ',3,'枚'],['にんにく',1,'片'],['しょうが',10,'g']],['みそ','みりん','酒','砂糖'],['大豆'],15,['豚バラとキャベツを食べやすい大きさに切る。','フライパンでにんにく・しょうがを炒め、豚肉・キャベツを加える。','みそ・みりん・酒・砂糖を合わせたタレで炒め絡める。']),
+    d(11,'鶏肉のトマト煮','meat','main',[['鶏もも肉',300,'g'],['玉ねぎ',1,'個'],['にんにく',2,'片'],['トマト缶',1,'缶','low']],['塩','こしょう','オリーブ油','コンソメ'],['大豆'],30,['鶏もも肉を一口大に切り、塩こしょうをする。','鍋でにんにく・玉ねぎを炒め、鶏肉を加える。','トマト缶・コンソメを加え蓋をして15分煮る。']),
+    d(12,'豚キムチ','meat','main',[['豚バラ薄切り',200,'g'],['キムチ',150,'g'],['木綿豆腐',1,'丁'],['長ねぎ',0.5,'本']],['醤油','ごま油','酒'],['大豆'],15,['豚バラを食べやすく切り、豆腐は水切りして切る。','フライパンに油を熱し豚肉を炒め、キムチ・長ねぎを加える。','豆腐を加えて醤油・ごま油で味付けする。']),
+    d(13,'鶏の竜田揚げ','meat','main',[['鶏もも肉',300,'g'],['しょうが',10,'g'],['にんにく',1,'片'],['片栗粉',30,'g','low']],['醤油','みりん','酒'],['大豆','小麦'],25,['鶏もも肉を一口大に切り、醤油・みりん・酒・しょうが・にんにくで10分漬ける。','片栗粉をまぶし、180℃の油で揚げる。','油をきってレモンを添える。']),
+    d(14,'鶏肉の塩麹焼き','meat','main',[['鶏もも肉',300,'g'],['塩麹',30,'g','low'],['レモン',0.5,'個']],['塩','こしょう','オリーブ油'],['大豆'],20,['鶏もも肉に塩麹を塗り、30分以上漬ける。','フライパンに油を熱し、皮目から中火で焼く。','裏返して蓋をし蒸し焼きにし、レモンを添える。']),
+    d(15,'麻婆豆腐','meat','main',[['豚ひき肉',150,'g'],['木綿豆腐',1,'丁'],['にんにく',2,'片'],['しょうが',10,'g'],['長ねぎ',0.5,'本']],['豆板醤','甜麺醤','醤油','酒','ごま油'],['大豆'],20,['豆腐は水切りして角切り、長ねぎはみじん切りにする。','フライパンにごま油を熱しにんにく・しょうがを炒め、ひき肉を加える。','豆板醤・甜麺醤・醤油・酒・だし汁を加え豆腐を入れ、水溶き片栗粉でとろみをつける。']),
+    d(16,'豚肉と白菜の重ね蒸し','meat','main',[['豚バラ薄切り',200,'g'],['白菜',4,'枚'],['しょうが',10,'g']],['ポン酢','ごま油'],['大豆'],20,['白菜は5cm幅に切り、豚バラと交互に重ねる。','鍋に白菜と豚バラを縦に並べ入れる。','蓋をして弱火で15分蒸し、ポン酢・ごま油をかける。']),
+    d(17,'肉豆腐','meat','main',[['牛こま切れ肉',150,'g'],['木綿豆腐',1,'丁'],['玉ねぎ',0.5,'個'],['長ねぎ',0.5,'本']],['醤油','みりん','酒','砂糖'],['大豆'],20,['豆腐は食べやすい大きさに切る。','鍋に醤油・みりん・酒・砂糖・だし汁を合わせて火にかける。','牛肉・玉ねぎ・豆腐・長ねぎを加えて煮る。']),
+    d(18,'豚の角煮','meat','main',[['豚バラブロック',400,'g'],['しょうが',15,'g'],['長ねぎ',0.5,'本'],['ゆで卵',2,'個']],['醤油','みりん','酒','砂糖'],['卵','大豆'],90,['豚バラブロックを一口大に切り、熱湯で下茹でする。','鍋に肉・しょうが・長ねぎ・醤油・みりん・酒・砂糖を入れ弱火で60分煮る。','ゆで卵を加えてさらに15分煮てなじませる。']),
+    d(19,'チキンのハーブグリル','meat','main',[['鶏もも肉',300,'g'],['にんにく',2,'片'],['レモン',0.5,'個'],['ローズマリー',1,'枝']],['塩','こしょう','オリーブ油'],['大豆'],25,['鶏もも肉ににんにく・塩・こしょう・オリーブ油・ローズマリーで下味をつける。','フライパンで皮目から焼き、こんがり焼き色をつける。','裏返して蓋をして蒸し焼きにし、レモンを搾る。']),
+    d(20,'豚肉のしぐれ煮','meat','main',[['豚こま切れ肉',200,'g'],['ごぼう',0.5,'本'],['しょうが',15,'g']],['醤油','みりん','酒','砂糖'],['大豆'],20,['ごぼうは斜め薄切りにして水にさらす。','フライパンに油を熱し豚肉・ごぼう・しょうがを炒める。','醤油・みりん・酒・砂糖を加えて汁気がなくなるまで炒り煮する。']),
+
+    /* ==== 魚・主菜 (21-40) ==== */
+    d(21,'鮭の塩焼き','fish','main',[['生鮭',2,'切れ']],['塩','酒'],['大豆'],15,['生鮭に塩を振り15分置き、水気をキッチンペーパーで拭く。','魚焼きグリルを予熱し、強火で片面6〜7分焼く。','裏返してさらに4分焼き、火が通ったら完成。']),
+    d(22,'ぶりの照り焼き','fish','main',[['ぶり',2,'切れ']],['醤油','みりん','酒','砂糖'],['大豆'],15,['ぶりに醤油・みりん・酒を絡めて10分漬ける。','フライパンに油を熱してぶりを焼く。','砂糖を加えて照りを出しながら仕上げる。']),
+    d(23,'鯖の味噌煮','fish','main',[['鯖',2,'切れ'],['しょうが',15,'g']],['みそ','みりん','酒','砂糖'],['大豆'],20,['鯖に熱湯をかけて臭みを取る。','鍋に水・酒・みりんを合わせ煮立て、みそ・砂糖・しょうがを加える。','鯖を加えて落し蓋をし10〜12分煮る。']),
+    d(24,'鮭のムニエル','fish','main',[['生鮭',2,'切れ'],['バター',20,'g','low'],['レモン',0.5,'個'],['薄力粉',10,'g','low']],['塩','こしょう'],['乳','小麦'],15,['鮭に塩こしょうをして薄力粉をまぶす。','フライパンにバターを熱し、鮭を両面焼く。','レモン汁を搾りかけて完成。']),
+    d(25,'鯛の塩焼き','fish','main',[['鯛',2,'切れ']],['塩','酒'],['大豆'],15,['鯛に塩を振り10分置き、水気を拭く。','魚焼きグリルで強火7〜8分焼く。','裏返してさらに4〜5分焼く。']),
+    d(26,'鰆の西京焼き','fish','main',[['鰆',2,'切れ'],['西京みそ',50,'g','low']],['みりん','酒'],['大豆'],20,['西京みそ・みりん・酒を合わせた西京床を作る。','鰆を西京床で1〜2時間漬ける。','グリルまたはフライパンで焦げないよう中火で7〜8分焼く。']),
+    d(27,'いわしの梅煮','fish','main',[['いわし',4,'尾'],['梅干し',2,'個','low'],['しょうが',15,'g']],['醤油','みりん','酒','砂糖'],['大豆'],25,['いわしは頭と内臓を取りきれいに洗う。','鍋に醤油・みりん・酒・砂糖・梅干し・しょうがを合わせ煮立てる。','いわしを加えて落し蓋をし15分煮る。']),
+    d(28,'たらのみぞれ煮','fish','main',[['たら',2,'切れ'],['大根',200,'g'],['しょうが',10,'g']],['醤油','みりん','酒'],['大豆'],20,['たらは一口大に切り、大根はすりおろす。','鍋にだし・醤油・みりん・酒を合わせて煮立てる。','たらを加えて5分煮、大根おろし・しょうがを加えてひと煮立ちさせる。']),
+    d(29,'鮭のホイル焼き','fish','main',[['生鮭',2,'切れ'],['しめじ',1,'パック'],['玉ねぎ',0.5,'個'],['バター',15,'g','low']],['塩','こしょう','醤油'],['乳','大豆'],20,['鮭に塩こしょうし、薄切り玉ねぎ・しめじをのせバターをのせる。','アルミホイルで包んでフライパンに並べ、水を少量加えて蓋をして蒸し焼き15分。','醤油を少量かけて完成。']),
+    d(30,'ほっけの塩焼き','fish','main',[['ほっけ',2,'枚']],['塩','酒'],['大豆'],15,['ほっけに塩を振り10分置き、水気を拭く。','魚焼きグリルで強火で片面7分焼く。','裏返して4〜5分焼いて完成。']),
+    d(31,'ぶり大根','fish','main',[['ぶり',2,'切れ'],['大根',300,'g'],['しょうが',15,'g']],['醤油','みりん','酒','砂糖'],['大豆'],35,['大根は輪切りにして下茹で、ぶりは熱湯で霜降りにする。','鍋に水・醤油・みりん・酒・砂糖・しょうがを合わせ煮立てる。','大根・ぶりを加えて落し蓋をし20〜25分煮る。']),
+    d(32,'あじの南蛮漬け','fish','main',[['あじ',4,'尾'],['玉ねぎ',0.5,'個'],['にんじん',0.5,'本'],['片栗粉',20,'g','low']],['醤油','酢','砂糖'],['大豆','小麦'],30,['あじは三枚おろしにして片栗粉をまぶし揚げる。','甘酢（醤油・酢・砂糖）を作る。','揚げたあじと薄切り野菜を熱いうちに甘酢に漬け、冷めたら完成。']),
+    d(33,'いかのバター醤油炒め','fish','main',[['するめいか',1,'杯'],['アスパラ',4,'本'],['にんにく',1,'片'],['バター',15,'g','low']],['醤油','酒','みりん'],['乳','大豆'],15,['いかは食べやすい大きさに切り、アスパラは斜め切りにする。','フライパンにバター・にんにくを熱し、いか・アスパラを炒める。','醤油・酒・みりんで味付けして仕上げる。']),
+    d(34,'えびのチリソース','fish','main',[['むきえび',200,'g'],['玉ねぎ',0.5,'個'],['にんにく',1,'片'],['しょうが',10,'g'],['長ねぎ',0.5,'本']],['豆板醤','ケチャップ','酒','砂糖'],['えび','大豆'],20,['えびは背わたを取り塩もみして洗う。','フライパンにごま油を熱しにんにく・しょうが・長ねぎを炒め、えびを加える。','豆板醤・ケチャップ・酒・砂糖・玉ねぎを加えてとろみをつける。']),
+    d(35,'鮭の竜田揚げ','fish','main',[['生鮭',2,'切れ'],['しょうが',10,'g'],['片栗粉',30,'g','low']],['醤油','みりん','酒'],['大豆','小麦'],20,['鮭を一口大に切り、醤油・みりん・酒・しょうがで10分漬ける。','片栗粉をまぶし180℃の油で揚げる。','油をきってレモンを添える。']),
+    d(36,'鯖の塩焼き','fish','main',[['鯖',2,'切れ']],['塩','酒'],['大豆'],15,['鯖に塩を振り15分置き、水気を拭く。','魚焼きグリルで強火で片面7分焼く。','裏返して4〜5分焼いて完成。']),
+    d(37,'たらのチーズ焼き','fish','main',[['たら',2,'切れ'],['玉ねぎ',0.5,'個'],['ピーマン',1,'個'],['チーズ',40,'g','low']],['塩','こしょう','マヨネーズ'],['乳','卵'],20,['たらに塩こしょうし、薄切り玉ねぎ・ピーマンをのせる。','マヨネーズを塗ってチーズをのせる。','オーブン200℃で12〜15分焼き、チーズが溶けたら完成。']),
+    d(38,'えびマヨ','fish','main',[['むきえび',200,'g'],['レタス',3,'枚'],['マヨネーズ',40,'g','low'],['レモン',0.5,'個']],['塩','こしょう','ケチャップ'],['えび','卵'],15,['えびは下処理をして塩茹でし冷ます。','マヨネーズ・ケチャップ・塩こしょうを混ぜソースを作る。','えびとレタスを和え、盛り付けてレモンを添える。']),
+    d(39,'めかじきのソテー','fish','main',[['めかじき',2,'切れ'],['にんにく',1,'片'],['レモン',0.5,'個']],['塩','こしょう','オリーブ油'],['大豆'],15,['めかじきに塩こしょうし、薄力粉をまぶす。','フライパンにオリーブ油とにんにくを熱し、めかじきを焼く。','両面こんがり焼いてレモンを添える。']),
+    d(40,'かれいの煮付け','fish','main',[['かれい',2,'切れ'],['しょうが',15,'g']],['醤油','みりん','酒','砂糖'],['大豆'],25,['かれいは熱湯で霜降りにして水洗いする。','鍋に醤油・みりん・酒・砂糖・しょうがを合わせ煮立てる。','かれいを加えて落し蓋をし15分煮る。']),
+
+    /* ==== 野菜・主菜 (41-50) ==== */
+    d(41,'厚揚げの煮物','veg','main',[['厚揚げ',1,'枚'],['大根',200,'g'],['にんじん',0.5,'本']],['だし','醤油','みりん','酒','砂糖'],['大豆'],25,['大根・にんじんを乱切りにし、厚揚げは熱湯をかけて油抜きする。','鍋にだし・醤油・みりん・酒・砂糖を合わせ火にかける。','野菜と厚揚げを加えて柔らかくなるまで15分煮る。']),
+    d(42,'豆腐ステーキ','veg','main',[['木綿豆腐',1,'丁'],['しめじ',1,'パック'],['しょうが',10,'g']],['醤油','みりん','酒','ごま油'],['大豆'],15,['木綿豆腐を厚めに切り、水気をよく拭く。','フライパンにごま油を熱し豆腐を両面こんがり焼く。','しょうが・しめじと醤油・みりん・酒で作ったあんをかける。']),
+    d(43,'卵とトマトの中華炒め','veg','main',[['たまご',3,'個'],['トマト',2,'個'],['長ねぎ',0.5,'本']],['塩','こしょう','鶏がらスープの素','ごま油'],['卵'],10,['トマトは角切り、長ねぎは斜め切りにする。','フライパンに油を熱し溶き卵を炒め半熟でいったん取り出す。','油を足してトマト・長ねぎを炒め、卵を戻し塩こしょう・鶏がらスープの素・ごま油で味付けする。']),
+    d(44,'だし巻き玉子','veg','main',[['たまご',4,'個'],['だし',50,'ml']],['醤油','みりん','塩'],['卵','大豆'],15,['卵を溶きほぐし、だし・醤油・みりん・塩を加え混ぜる。','卵焼き器に油を薄く引いて熱し、卵液1/3を流し奥から手前に巻く。','これを3回繰り返し形を整える。']),
+    d(45,'揚げ出し豆腐','veg','main',[['木綿豆腐',1,'丁'],['大根',100,'g'],['片栗粉',30,'g','low'],['長ねぎ',0.25,'本']],['だし','醤油','みりん'],['大豆','小麦'],20,['豆腐はキッチンペーパーで水気をとり、片栗粉をまぶす。','180℃の油で揚げ油をきる。','だし・醤油・みりんのつゆをかけ、大根おろし・長ねぎを添える。']),
+    d(46,'野菜炒め','veg','main',[['キャベツ',4,'枚'],['にんじん',0.5,'本'],['もやし',1,'袋'],['玉ねぎ',0.5,'個']],['塩','こしょう','醤油','ごま油','鶏がらスープの素'],['大豆'],10,['キャベツ・にんじん・玉ねぎを食べやすく切り、もやしは洗う。','フライパンに油を強火で熱し野菜を炒める。','醤油・ごま油・鶏がらスープの素で味付けする。']),
+    d(47,'ゴーヤチャンプルー','veg','main',[['ゴーヤ',1,'本'],['木綿豆腐',1,'丁'],['たまご',2,'個'],['スパム',100,'g']],['醤油','塩','かつお節','ごま油'],['卵','大豆'],20,['ゴーヤは半分に切り種と綿を取り薄切りにして塩もみする。','豆腐は水切りして崩しながら炒め一旦取り出す。','ゴーヤ・スパムを炒め豆腐を戻し卵を加え、醤油・塩・かつお節で仕上げる。']),
+    d(48,'なす味噌炒め','veg','main',[['なす',3,'本'],['ピーマン',2,'個'],['にんにく',1,'片']],['みそ','みりん','酒','砂糖','ごま油'],['大豆'],15,['なすは乱切りにして塩水にさらし水気を拭く。','フライパンにごま油とにんにくを熱し、なすとピーマンを炒める。','みそ・みりん・酒・砂糖を合わせたタレを加えて炒め絡める。']),
+    d(49,'豆腐と野菜のあんかけ','veg','main',[['絹豆腐',1,'丁'],['チンゲン菜',1,'株'],['にんじん',0.25,'本'],['片栗粉',10,'g','low']],['だし','醤油','みりん','塩'],['大豆','小麦'],15,['絹豆腐は電子レンジで加熱し水切りする。','チンゲン菜・にんじんをだしで煮てだし・醤油・みりん・塩で味付けする。','水溶き片栗粉でとろみをつけ豆腐にかける。']),
+    d(50,'オムレツ','veg','main',[['たまご',4,'個'],['玉ねぎ',0.5,'個'],['バター',15,'g','low']],['塩','こしょう','ケチャップ'],['卵','乳'],15,['玉ねぎをみじん切りにしてバターで炒め冷ます。','卵に塩こしょうし玉ねぎを加え混ぜる。','フライパンにバターを熱し卵を流し込み半熟で折り返し形を整える。']),
+
+    /* ==== 肉・副菜 (51-58) ==== */
+    d(51,'鶏のつくね','meat','side',[['鶏ひき肉',200,'g'],['長ねぎ',0.5,'本'],['しょうが',10,'g'],['たまご',1,'個']],['醤油','みりん','酒','砂糖'],['卵','大豆'],20,['鶏ひき肉・みじん切り長ねぎ・しょうが・卵・塩こしょうを混ぜる。','小判形に成形しフライパンで両面焼く。','醤油・みりん・酒・砂糖のタレを絡める。']),
+    d(52,'豚バラの甘辛炒め','meat','side',[['豚バラ薄切り',150,'g'],['ごぼう',0.5,'本'],['しょうが',10,'g']],['醤油','みりん','酒','砂糖'],['大豆'],15,['ごぼうは斜め薄切りにして水にさらす。','フライパンに油を熱し豚バラ・ごぼう・しょうがを炒める。','醤油・みりん・酒・砂糖を加えて炒め絡める。']),
+    d(53,'鶏そぼろ','meat','side',[['鶏ひき肉',200,'g'],['しょうが',10,'g']],['醤油','みりん','酒','砂糖'],['大豆'],15,['鶏ひき肉・しょうが・醤油・みりん・酒・砂糖を鍋に入れる。','菜箸で混ぜながら中火で火を通す。','汁気がなくなるまで炒り煮して完成。']),
+    d(54,'ソーセージとポテトの炒め物','meat','side',[['ウィンナー',4,'本'],['じゃがいも',2,'個'],['玉ねぎ',0.5,'個'],['ピーマン',1,'個']],['塩','こしょう','醤油'],['大豆','小麦'],15,['じゃがいもは一口大に切ってレンジで加熱する。','玉ねぎ・ピーマンを切り、ウィンナーは斜め切りにする。','フライパンに油を熱し炒め、塩こしょう・醤油で味付けする。']),
+    d(55,'鶏ハム','meat','side',[['鶏むね肉',1,'枚'],['塩麹',20,'g','low']],['塩','こしょう'],['大豆'],40,['鶏むね肉に塩麹・塩こしょうを塗り込む。','ラップでしっかり巻いて形を整える。','沸騰したお湯で3〜4分茹でた後火を止め、蓋をして30分以上置く。']),
+    d(56,'牛肉と春菊の炒め物','meat','side',[['牛こま切れ肉',150,'g'],['春菊',1,'束'],['にんにく',1,'片']],['醤油','ごま油','塩','こしょう'],['大豆'],10,['春菊は食べやすい長さに切る。','フライパンにごま油とにんにくを熱し牛肉を炒める。','春菊を加えてさっと炒め、醤油・塩こしょうで味付けする。']),
+    d(57,'豚肉と大根のきんぴら','meat','side',[['豚こま切れ肉',100,'g'],['大根',200,'g'],['にんじん',0.5,'本'],['ごま',5,'g','low']],['醤油','みりん','酒','砂糖','ごま油'],['大豆'],15,['大根・にんじんは細切りにする。','フライパンにごま油を熱し豚肉を炒め、野菜を加える。','醤油・みりん・酒・砂糖で味付けし、ごまを振る。']),
+    d(58,'鶏レバーの甘辛煮','meat','side',[['鶏レバー',200,'g'],['しょうが',15,'g'],['長ねぎ',0.5,'本']],['醤油','みりん','酒','砂糖'],['大豆'],25,['鶏レバーはひと口大に切り、牛乳につけて臭みを取り水洗いする。','鍋に醤油・みりん・酒・砂糖・しょうがを合わせ煮立てる。','レバーと長ねぎを加えて煮汁がなくなるまで煮詰める。']),
+
+    /* ==== 魚・副菜 (59-66) ==== */
+    d(59,'ちくわの磯辺揚げ','fish','side',[['ちくわ',4,'本','low'],['青のり',3,'g','low'],['薄力粉',40,'g','low'],['たまご',0.5,'個']],['塩'],['小麦','卵','大豆'],15,['薄力粉・水・卵・青のり・塩を混ぜて衣を作る。','ちくわに衣をつけ、170℃の油で揚げる。','油をきって完成。']),
+    d(60,'たこのマリネ','fish','side',[['ゆでたこ',150,'g'],['ミニトマト',6,'個'],['玉ねぎ',0.25,'個'],['レモン',0.5,'個']],['塩','こしょう','オリーブ油','酢'],['大豆'],10,['ゆでたこは薄切り、ミニトマトは半分に切る。','玉ねぎは薄切りにして水にさらし水気を切る。','全材料をオリーブ油・酢・塩こしょうで和える。']),
+    d(61,'まぐろのわさびあえ','fish','side',[['まぐろ（刺身用）',100,'g'],['きゅうり',1,'本'],['わさび',5,'g','low']],['醤油','みりん'],['大豆'],10,['まぐろは角切り、きゅうりは薄切りにして塩もみする。','醤油・みりん・わさびを合わせたタレを作る。','まぐろ・きゅうりをタレで和える。']),
+    d(62,'えびのかき揚げ','fish','side',[['むきえび',100,'g'],['玉ねぎ',0.5,'個'],['にんじん',0.5,'本'],['薄力粉',50,'g','low']],['塩'],['えび','小麦'],20,['えびは下処理して粗切り、玉ねぎ・にんじんは細切りにする。','薄力粉を加え軽く混ぜ（混ぜすぎない）、スプーンで取り180℃の油に入れる。','こんがり揚がったら油をきる。']),
+    d(63,'しらすおろし','fish','side',[['しらす',50,'g'],['大根',200,'g'],['しょうが',5,'g']],['ポン酢'],['大豆'],5,['大根はすりおろし水気を軽く切る。','大根おろし・しらす・しょうがを盛り付ける。','食べる直前にポン酢をかける。']),
+    d(64,'明太子ポテト','fish','side',[['じゃがいも',2,'個'],['明太子',1,'腹'],['バター',10,'g','low'],['牛乳',50,'ml','low']],['塩','こしょう'],['乳'],20,['じゃがいもをレンジで加熱して熱いうちに潰す。','バター・牛乳を加えなめらかにする。','明太子・塩こしょうを混ぜ合わせる。']),
+    d(65,'あじのたたき','fish','side',[['あじ（刺身用）',2,'尾'],['長ねぎ',0.5,'本'],['しょうが',10,'g'],['みょうが',2,'個']],['みそ','醤油','ごま油'],['大豆'],15,['あじは三枚おろしにし皮を剥いてたたく。','長ねぎ・しょうが・みょうがをみじん切りにしてあじと和える。','みそ・醤油・ごま油で味付けする。']),
+    d(66,'かまぼこと野菜のあえ物','fish','side',[['かまぼこ',50,'g','low'],['きゅうり',1,'本'],['にんじん',0.25,'本']],['酢','砂糖','塩','ごま油'],['大豆','小麦'],10,['かまぼこは薄切り、きゅうりは斜め薄切りして塩もみする。','にんじんは細切りにして塩茹でし冷ます。','酢・砂糖・塩・ごま油で和える。']),
+
+    /* ==== 野菜・副菜 (67-83) ==== */
+    d(67,'ほうれん草のごまあえ','veg','side',[['ほうれん草',1,'束'],['すりごま',8,'g','low']],['醤油','砂糖','みりん'],['大豆'],10,['ほうれん草は塩茹でして冷水にとり水気を絞る。','4cm長さに切る。','すりごま・醤油・砂糖・みりんを合わせてほうれん草と和える。']),
+    d(68,'きんぴらごぼう','veg','side',[['ごぼう',1,'本'],['にんじん',0.5,'本'],['ごま',5,'g','low']],['醤油','みりん','酒','砂糖','ごま油'],['大豆'],15,['ごぼうは細切りにして水にさらす。','フライパンにごま油を熱してごぼう・にんじんを炒める。','醤油・みりん・酒・砂糖で味付けしごまを振る。']),
+    d(69,'小松菜の炒め物','veg','side',[['小松菜',1,'束'],['にんにく',1,'片']],['塩','醤油','ごま油'],['大豆'],10,['小松菜は4cm長さに切る。','フライパンにごま油とにんにくを熱す。','小松菜を炒め、塩・醤油で味付けする。']),
+    d(70,'もやしのナムル','veg','side',[['もやし',1,'袋'],['ごま',5,'g','low']],['塩','ごま油','鶏がらスープの素'],['大豆'],10,['もやしは熱湯でさっと茹でて水気を切る。','塩・ごま油・鶏がらスープの素で和える。','ごまを振って完成。']),
+    d(71,'ひじきの炒め煮','veg','side',[['乾燥ひじき',15,'g','low'],['にんじん',0.5,'本'],['油揚げ',1,'枚']],['醤油','みりん','酒','砂糖'],['大豆'],20,['乾燥ひじきは水で戻す。','フライパンに油を熱しにんじん・油揚げを炒め、ひじきを加える。','醤油・みりん・酒・砂糖で味付けし汁気が飛ぶまで炒り煮する。']),
+    d(72,'切り干し大根の煮物','veg','side',[['切り干し大根',30,'g','low'],['にんじん',0.5,'本'],['油揚げ',1,'枚']],['醤油','みりん','酒','砂糖','だし'],['大豆'],20,['切り干し大根は水で戻し水気を絞る。','鍋にだしを入れにんじん・油揚げを炒め、切り干し大根を加える。','醤油・みりん・酒・砂糖で15分煮る。']),
+    d(73,'かぼちゃの煮物','veg','side',[['かぼちゃ',300,'g']],['だし','醤油','みりん','砂糖'],['大豆'],20,['かぼちゃは食べやすい大きさに切る。','鍋に少量の水・だし・醤油・みりん・砂糖を合わせる。','かぼちゃを皮目を下にして並べ蓋をして弱火で15分煮る。']),
+    d(74,'ブロッコリーのごまあえ','veg','side',[['ブロッコリー',1,'株'],['すりごま',8,'g','low']],['醤油','砂糖','みりん'],['大豆'],10,['ブロッコリーを小房に分けて塩茹でし冷ます。','水気をよく切る。','すりごま・醤油・砂糖・みりんで和える。']),
+    d(75,'大根サラダ','veg','side',[['大根',200,'g'],['にんじん',0.25,'本'],['かいわれ大根',0.5,'パック']],['塩','ごま油','酢','砂糖'],['大豆'],10,['大根・にんじんは細切りにして塩もみし水気を絞る。','かいわれ大根を加える。','塩・ごま油・酢・砂糖でドレッシングを作り和える。']),
+    d(76,'きゅうりと玉ねぎの酢の物','veg','side',[['きゅうり',2,'本'],['玉ねぎ',0.25,'個'],['わかめ',10,'g','low']],['酢','砂糖','塩'],['大豆'],10,['きゅうりは薄切りにして塩もみし水気を絞る。','玉ねぎは薄切りにして水にさらす。','わかめを戻してきゅうり・玉ねぎと酢・砂糖・塩で和える。']),
+    d(77,'れんこんのきんぴら','veg','side',[['れんこん',200,'g'],['にんじん',0.25,'本'],['ごま',5,'g','low']],['醤油','みりん','酒','砂糖','ごま油'],['大豆'],15,['れんこんは薄切りにして酢水にさらす。','フライパンにごま油を熱してれんこん・にんじんを炒める。','醤油・みりん・酒・砂糖で味付けしごまを振る。']),
+    d(78,'なすの煮浸し','veg','side',[['なす',3,'本']],['だし','醤油','みりん','酒'],['大豆'],15,['なすは縦半分に切り皮に切り込みを入れ、油を絡める。','鍋にだし・醤油・みりん・酒を合わせ煮立てる。','なすを加えて5〜7分煮て味をなじませる。']),
+    d(79,'アスパラのバター炒め','veg','side',[['アスパラガス',8,'本'],['にんにく',1,'片'],['バター',10,'g','low']],['塩','こしょう','醤油'],['乳','大豆'],10,['アスパラは根元の硬い部分を切り落とし斜め切りにする。','フライパンにバター・にんにくを熱す。','アスパラを炒め塩こしょう・醤油で味付けする。']),
+    d(80,'白菜の浅漬け','veg','side',[['白菜',4,'枚'],['昆布',5,'cm','low'],['赤唐辛子',1,'本','low']],['塩'],['大豆'],20,['白菜は食べやすい大きさに切る。','塩・昆布・赤唐辛子を加えて混ぜる。','重石をして30分以上漬ける。']),
+    d(81,'じゃがいもの煮っころがし','veg','side',[['じゃがいも',3,'個']],['だし','醤油','みりん','砂糖','酒'],['大豆'],20,['じゃがいもは一口大に切る。','鍋にじゃがいも・だし・醤油・みりん・砂糖・酒を入れ火にかける。','蓋をして中火で15分煮て汁気がなくなるまで絡める。']),
+    d(82,'小松菜としめじの炒め物','veg','side',[['小松菜',1,'束'],['しめじ',1,'パック'],['にんにく',1,'片']],['醤油','みりん','ごま油','塩'],['大豆'],10,['小松菜は4cm長さに切り、しめじは石突きを切りほぐす。','フライパンにごま油とにんにくを熱す。','しめじ・小松菜を炒め醤油・みりん・塩で味付けする。']),
+    d(83,'キャベツのコールスロー','veg','side',[['キャベツ',4,'枚'],['にんじん',0.25,'本'],['コーン',30,'g','low'],['マヨネーズ',30,'g','low']],['酢','塩','砂糖','こしょう'],['卵'],10,['キャベツ・にんじんを細切りにして塩もみし水気を絞る。','マヨネーズ・酢・塩・砂糖・こしょうでドレッシングを作る。','野菜とコーンを和える。']),
+
+    /* ==== 汁物 (84-100) ==== */
+    d(84,'豚汁','meat','soup',[['豚バラ薄切り',100,'g'],['大根',150,'g'],['にんじん',0.5,'本'],['こんにゃく',0.5,'枚','low'],['じゃがいも',1,'個']],['みそ','だし','ごま油'],['大豆'],25,['大根・にんじん・じゃがいもは食べやすく切り、こんにゃくは下茹でする。','鍋にごま油を熱し豚バラを炒め、野菜・こんにゃくを加えて炒める。','だし汁を加えて野菜が柔らかくなったらみそを溶き入れる。']),
+    d(85,'鶏だんご汁','meat','soup',[['鶏ひき肉',150,'g'],['大根',150,'g'],['長ねぎ',0.5,'本'],['しょうが',10,'g']],['みそ','だし','醤油'],['卵','大豆'],25,['鶏ひき肉・みじん切りしょうが・みじん切り長ねぎ・醤油・酒をこねて丸める。','だし汁を煮立て大根を加えて煮る。','鶏だんごを加えて煮たらみそを溶き入れる。']),
+    d(86,'豚肉と白菜のスープ','meat','soup',[['豚バラ薄切り',100,'g'],['白菜',3,'枚'],['しょうが',10,'g'],['長ねぎ',0.5,'本']],['鶏がらスープの素','醤油','塩','ごま油'],['大豆'],15,['豚バラは食べやすく切り、白菜は4cm幅、長ねぎは斜め切りにする。','鍋に水と鶏がらスープの素を入れ煮立てる。','豚肉・白菜・しょうが・長ねぎを加えて煮て塩・醤油・ごま油で味付けする。']),
+    d(87,'牛肉と根菜のスープ','meat','soup',[['牛こま切れ肉',100,'g'],['大根',100,'g'],['にんじん',0.5,'本'],['ごぼう',0.25,'本']],['コンソメ','塩','こしょう'],['大豆'],20,['大根・にんじん・ごぼうは薄切りにする。','鍋に水・コンソメを入れ煮立てる。','牛肉と野菜を加えて15分煮て塩こしょうで調味する。']),
+    d(88,'鶏とじゃがいものスープ','meat','soup',[['鶏もも肉',150,'g'],['じゃがいも',2,'個'],['玉ねぎ',0.5,'個'],['にんじん',0.5,'本']],['コンソメ','塩','こしょう'],['大豆'],25,['鶏もも肉は一口大に切り、野菜は食べやすく切る。','鍋に水・コンソメを入れ鶏肉と野菜を加えて火にかける。','野菜が柔らかくなったら塩こしょうで味を整える。']),
+    d(89,'あさりのみそ汁','fish','soup',[['あさり',100,'g'],['わかめ',5,'g','low'],['長ねぎ',0.25,'本']],['みそ','だし'],['大豆'],15,['あさりは砂抜きして擦り洗いする。','鍋にだし汁を入れ煮立て、あさりを加える。','口が開いたらわかめ・長ねぎを加えてみそを溶き入れる。']),
+    d(90,'いわしつみれ汁','fish','soup',[['いわし',2,'尾'],['大根',150,'g'],['長ねぎ',0.5,'本'],['しょうが',10,'g']],['みそ','だし','酒'],['大豆'],25,['いわしは三枚おろしにし、しょうが・みそを加えてすり身にする。','だし汁を煮立て大根・長ねぎを加えて煮る。','スプーンでつみれを丸め入れて煮てみそを溶き入れる。']),
+    d(91,'鮭のみそ汁','fish','soup',[['生鮭',1,'切れ'],['大根',100,'g'],['豆腐',0.5,'丁'],['長ねぎ',0.25,'本']],['みそ','だし'],['大豆'],15,['鮭を一口大に切り、大根は短冊切りにする。','だし汁を煮立て大根を加えて煮る。','鮭・豆腐・長ねぎを加えて煮たらみそを溶き入れる。']),
+    d(92,'はまぐりのお吸い物','fish','soup',[['はまぐり',6,'個'],['豆腐',0.5,'丁'],['三つ葉',5,'g']],['だし','醤油','塩','酒'],['大豆'],15,['はまぐりは砂抜きして擦り洗いする。','鍋にだし汁・酒を入れ煮立て、はまぐりを加える。','口が開いたら豆腐・三つ葉を加え醤油・塩で味を整える。']),
+    d(93,'えびとわかめのスープ','fish','soup',[['むきえび',80,'g'],['わかめ',5,'g','low'],['長ねぎ',0.25,'本'],['しょうが',5,'g']],['鶏がらスープの素','塩','ごま油'],['えび','大豆'],10,['えびは背わたを取り、わかめは水で戻す。','鍋に水・鶏がらスープの素を入れ煮立てる。','えび・わかめ・長ねぎ・しょうがを加えて煮て塩・ごま油で味付けする。']),
+    d(94,'基本のみそ汁','veg','soup',[['豆腐',0.5,'丁'],['わかめ',5,'g','low'],['長ねぎ',0.25,'本']],['みそ','だし'],['大豆'],10,['だし汁を鍋に入れて煮立てる。','豆腐は角切り、わかめは戻して長ねぎは小口切りにする。','豆腐・わかめ・長ねぎを加えてみそを溶き入れる。']),
+    d(95,'なめこのみそ汁','veg','soup',[['なめこ',1,'袋'],['豆腐',0.5,'丁'],['長ねぎ',0.25,'本']],['みそ','だし'],['大豆'],10,['だし汁を鍋に入れて煮立てる。','豆腐は角切り、長ねぎは小口切りにする。','なめこ・豆腐・長ねぎを加えてみそを溶き入れる。']),
+    d(96,'かぼちゃのみそ汁','veg','soup',[['かぼちゃ',150,'g'],['玉ねぎ',0.25,'個']],['みそ','だし'],['大豆'],15,['かぼちゃは薄切り、玉ねぎは薄切りにする。','だし汁を鍋に入れて煮立てかぼちゃと玉ねぎを加える。','柔らかくなったらみそを溶き入れる。']),
+    d(97,'わかめスープ','veg','soup',[['わかめ',10,'g','low'],['長ねぎ',0.25,'本'],['ごま',5,'g','low']],['鶏がらスープの素','醤油','ごま油','塩'],['大豆'],10,['わかめは水で戻し水気を切る。','鍋に水・鶏がらスープの素を入れ煮立てる。','わかめ・長ねぎ・ごまを加えて醤油・ごま油・塩で味付けする。']),
+    d(98,'野菜たっぷりみそ汁','veg','soup',[['大根',100,'g'],['にんじん',0.25,'本'],['じゃがいも',1,'個'],['玉ねぎ',0.25,'個']],['みそ','だし'],['大豆'],15,['大根・にんじん・じゃがいも・玉ねぎを食べやすく切る。','だし汁に野菜を加えて柔らかくなるまで煮る。','みそを溶き入れて完成。']),
+    d(99,'長ねぎとじゃがいものみそ汁','veg','soup',[['長ねぎ',0.5,'本'],['じゃがいも',1,'個'],['油揚げ',1,'枚']],['みそ','だし'],['大豆'],15,['長ねぎは斜め切り、じゃがいもは薄切り、油揚げは短冊切りにする。','だし汁を煮立て、じゃがいもと油揚げを加えて煮る。','長ねぎを加えてみそを溶き入れる。']),
+    d(100,'コーンとじゃがいものスープ','veg','soup',[['じゃがいも',2,'個'],['玉ねぎ',0.5,'個'],['コーン缶',1,'缶','low'],['バター',10,'g','low']],['塩','こしょう','コンソメ'],['乳'],20,['じゃがいもは薄切り、玉ねぎは薄切りにする。','鍋にバターを熱して玉ねぎを炒め、水・コンソメを加えじゃがいもを煮る。','コーン缶を加えて塩こしょうで味を整える。']),
+
+    /* ==== 肉・主菜 追加 (101-110) ==== */
+    d(101,'チキンカツ','meat','main',[['鶏むね肉',300,'g'],['たまご',1,'個'],['薄力粉',30,'g','low'],['パン粉',50,'g','low']],['塩','こしょう'],['卵','小麦'],25,['鶏むね肉を1cm厚に開いて塩こしょうをする。','薄力粉・溶き卵・パン粉の順にまぶす。','170℃の油で4〜5分揚げてソースを添える。']),
+    d(102,'豚肉とピーマンの炒め物','meat','main',[['豚こま切れ肉',200,'g'],['ピーマン',3,'個'],['玉ねぎ',0.5,'個']],['醤油','みりん','オイスターソース','ごま油'],['大豆'],15,['豚こま切れ肉とピーマン・玉ねぎを食べやすく切る。','フライパンで豚肉を炒め野菜を加える。','醤油・みりん・オイスターソース・ごま油で味付けする。']),
+    d(103,'鶏肉のみそ焼き','meat','main',[['鶏もも肉',300,'g'],['しょうが',10,'g']],['みそ','みりん','酒','砂糖'],['大豆'],25,['みそ・みりん・酒・砂糖・すりおろしょうがを合わせ鶏肉に塗り30分漬ける。','フライパンで皮目から焼き蓋をして蒸し焼きにする。','焦げないよう弱火でじっくり火を通す。']),
+    d(104,'牛肉の甘辛炒め','meat','main',[['牛こま切れ肉',250,'g'],['長ねぎ',1,'本'],['にんにく',1,'片']],['醤油','みりん','酒','砂糖','ごま油'],['大豆'],15,['牛こま切れ肉は食べやすく切り、長ねぎは斜め切りにする。','フライパンにごま油とにんにくを熱し牛肉を炒める。','長ねぎを加え醤油・みりん・酒・砂糖で炒め絡める。']),
+    d(105,'回鍋肉','meat','main',[['豚バラ薄切り',200,'g'],['キャベツ',4,'枚'],['ピーマン',2,'個'],['にんにく',1,'片'],['しょうが',10,'g']],['豆板醤','甜麺醤','醤油','酒','ごま油'],['大豆'],15,['キャベツはざく切り、ピーマンは乱切りにする。豚バラはさっと茹でて冷ます。','フライパンにごま油とにんにく・しょうがを炒め、豚バラ・野菜を加える。','豆板醤・甜麺醤・醤油・酒で炒め絡める。']),
+    d(106,'手羽先の甘辛焼き','meat','main',[['鶏手羽先',6,'本'],['にんにく',1,'片']],['醤油','みりん','酒','砂糖','塩','こしょう'],['大豆'],30,['手羽先に塩こしょうをして下味をつける。','フライパンで皮目からじっくり焼く。','醤油・みりん・酒・砂糖を加えて絡め照りが出たら完成。']),
+    d(107,'ミートボールのトマト煮','meat','main',[['合いびき肉',250,'g'],['玉ねぎ',0.5,'個'],['たまご',1,'個'],['パン粉',20,'g','low'],['トマト缶',1,'缶','low']],['塩','こしょう','ナツメグ','コンソメ'],['卵','小麦'],30,['ひき肉・みじん切り玉ねぎ・卵・パン粉・塩こしょう・ナツメグを混ぜて丸める。','フライパンで転がしながら焼く。','トマト缶・コンソメを加えて15分煮込む。']),
+    d(108,'豚肉の梅しそ焼き','meat','main',[['豚ロース薄切り',200,'g'],['大葉',10,'枚'],['梅干し',2,'個','low']],['醤油','みりん','酒'],['大豆'],15,['梅干しは種を取りたたく。醤油・みりん・酒・梅肉を合わせてたれを作る。','豚肉をフライパンで焼きたれを加えて絡める。','大葉をちぎってのせて完成。']),
+    d(109,'鶏肉のガーリックバターソテー','meat','main',[['鶏もも肉',300,'g'],['にんにく',2,'片'],['バター',10,'g','low']],['塩','こしょう','醤油'],['乳','大豆'],20,['鶏もも肉に塩こしょうをする。','フライパンにバターとにんにくを熱し皮目からじっくり焼く。','裏返して蓋をし蒸し焼きにし醤油を回しかけて仕上げる。']),
+    d(110,'豚バラとじゃがいものガーリック炒め','meat','main',[['豚バラ薄切り',200,'g'],['じゃがいも',2,'個'],['にんにく',2,'片']],['塩','こしょう','醤油','オリーブ油'],['大豆'],20,['じゃがいもは一口大に切ってレンジで加熱する。','フライパンにオリーブ油とにんにくを熱し豚バラを炒める。','じゃがいもを加えて塩こしょう・醤油で味付けする。']),
+
+    /* ==== 魚・主菜 追加 (111-120) ==== */
+    d(111,'さんまの塩焼き','fish','main',[['さんま',2,'尾']],['塩','酒'],['大豆'],15,['さんまに塩を振り10分置く。','魚焼きグリルで強火で片面7〜8分焼く。','裏返してさらに4〜5分焼いて完成。']),
+    d(112,'鮭のチャンチャン焼き','fish','main',[['生鮭',2,'切れ'],['キャベツ',3,'枚'],['玉ねぎ',0.5,'個'],['しめじ',1,'パック'],['バター',15,'g','low']],['みそ','みりん','酒','砂糖'],['乳','大豆'],25,['鮭・キャベツ・玉ねぎ・しめじをアルミホイルに並べる。','みそ・みりん・酒・砂糖を合わせて塗りバターをのせてホイルで包む。','フライパンに水を少量加え蓋をして20分蒸し焼きにする。']),
+    d(113,'たらのポン酢蒸し','fish','main',[['たら',2,'切れ'],['長ねぎ',0.5,'本'],['しょうが',10,'g'],['豆腐',0.5,'丁']],['ポン酢','ごま油'],['大豆'],20,['たらを耐熱皿に置き斜め薄切りの長ねぎ・しょうがをのせる。','ラップをして電子レンジで6分加熱する。','ポン酢・ごま油をかけて完成。']),
+    d(114,'えびのガーリックバター炒め','fish','main',[['むきえび',200,'g'],['にんにく',2,'片'],['バター',15,'g','low']],['塩','こしょう','白ワイン'],['えび','乳'],15,['えびは背わたを取り塩もみして洗う。','フライパンにバターとにんにくを熱しえびを炒める。','白ワインを加えて炒め塩こしょうで味を整える。']),
+    d(115,'ほたてのバター醤油焼き','fish','main',[['ほたて貝柱',6,'個'],['バター',15,'g','low'],['大葉',5,'枚']],['醤油','酒','塩','こしょう'],['乳','大豆'],10,['ほたてに塩こしょうをする。','フライパンにバターを熱しほたてを両面こんがり焼く。','醤油・酒を加えて絡め大葉を添える。']),
+    d(116,'いかのリング揚げ','fish','main',[['するめいか',1,'杯'],['薄力粉',50,'g','low'],['たまご',1,'個']],['塩','こしょう'],['小麦','卵'],20,['いかはリング状に切り塩こしょうをする。','薄力粉・溶き卵・水で衣を作る。','180℃の油でいかを揚げて油をきる。']),
+    d(117,'鯖のカレー醤油焼き','fish','main',[['鯖',2,'切れ'],['にんにく',1,'片']],['醤油','みりん','カレー粉'],['大豆'],15,['鯖に醤油・みりん・カレー粉を合わせた漬け汁で15分漬ける。','フライパンに油を熱し鯖を両面焼く。','こんがり焼けたら完成。']),
+    d(118,'ぶりのポン酢焼き','fish','main',[['ぶり',2,'切れ'],['大根',100,'g']],['ポン酢','みりん','砂糖'],['大豆'],15,['ぶりに塩を振り10分置き水気を拭く。','フライパンに油を熱してぶりを両面焼く。','ポン酢・みりん・砂糖を加えて絡め大根おろしを添える。']),
+    d(119,'あさりの酒蒸し','fish','main',[['あさり',200,'g'],['長ねぎ',0.5,'本'],['しょうが',10,'g']],['酒','醤油','ごま油'],['大豆'],15,['あさりは砂抜きして擦り洗いする。','フライパンにあさり・長ねぎ・しょうがを入れ酒を加える。','蓋をして蒸し焼きにし口が開いたら醤油・ごま油を回しかける。']),
+    d(120,'鮭とほうれん草のクリーム煮','fish','main',[['生鮭',2,'切れ'],['ほうれん草',1,'束'],['玉ねぎ',0.5,'個'],['生クリーム',100,'ml','low']],['塩','こしょう','白ワイン','バター','コンソメ'],['乳','大豆'],25,['鮭は一口大に切り塩こしょうをする。','バターで玉ねぎを炒め鮭を加える。','白ワイン・コンソメ・生クリームを加えてほうれん草とともに煮て塩こしょうで味を整える。']),
+
+    /* ==== 野菜・主菜 追加 (121-130) ==== */
+    d(121,'野菜の天ぷら盛り合わせ','veg','main',[['さつまいも',0.5,'本'],['なす',1,'本'],['かぼちゃ',100,'g'],['ピーマン',2,'個'],['薄力粉',80,'g','low'],['たまご',1,'個']],['塩','だし','醤油','みりん'],['卵','小麦','大豆'],25,['野菜は食べやすく切る。','薄力粉・卵・冷水で衣を作る（混ぜすぎない）。','170℃の油で野菜を揚げだし・醤油・みりんのつゆで食べる。']),
+    d(122,'豆腐ハンバーグ','veg','main',[['木綿豆腐',1,'丁'],['玉ねぎ',0.5,'個'],['たまご',1,'個'],['薄力粉',20,'g','low']],['塩','こしょう','醤油','みりん','砂糖'],['卵','小麦','大豆'],20,['豆腐はキッチンペーパーでしっかり水切りする。','玉ねぎをみじん切りにして炒め冷ます。','豆腐・玉ねぎ・卵・薄力粉・塩こしょうを混ぜ成形してフライパンで焼き醤油・みりん・砂糖のソースをかける。']),
+    d(123,'炒り豆腐','veg','main',[['木綿豆腐',1,'丁'],['にんじん',0.5,'本'],['しいたけ',2,'枚'],['長ねぎ',0.5,'本'],['たまご',2,'個']],['だし','醤油','みりん','砂糖'],['卵','大豆'],15,['豆腐はキッチンペーパーで水切りし崩す。にんじん・しいたけ・長ねぎを細切りにする。','フライパンで野菜を炒め豆腐を加えだし・醤油・みりん・砂糖で味付けし卵でとじる。']),
+    d(124,'なすのグラタン','veg','main',[['なす',3,'本'],['玉ねぎ',0.5,'個'],['トマト缶',1,'缶','low'],['チーズ',60,'g','low'],['バター',20,'g','low'],['薄力粉',20,'g','low'],['牛乳',200,'ml','low']],['塩','こしょう','コンソメ','オリーブ油'],['乳','小麦'],35,['なす・玉ねぎをオリーブ油で炒めトマト缶・コンソメを加えて煮る。','バターと薄力粉でルーを作り牛乳を加えてホワイトソースを作る。','グラタン皿にソースを重ねチーズをのせ200℃のオーブンで15分焼く。']),
+    d(125,'野菜カレー','veg','main',[['じゃがいも',2,'個'],['にんじん',1,'本'],['玉ねぎ',1,'個'],['なす',1,'本'],['カレールー',2,'かけ','low']],['油','塩'],['小麦','乳','大豆'],35,['じゃがいも・にんじん・玉ねぎ・なすを食べやすく切る。','鍋に油を熱し玉ねぎを炒め残りの野菜を加える。','水を加えて野菜が柔らかくなるまで煮てカレールーを溶かし入れる。']),
+    d(126,'きのこのアヒージョ','veg','main',[['マッシュルーム',1,'パック'],['しめじ',1,'パック'],['えのき',1,'袋'],['にんにく',3,'片'],['赤唐辛子',1,'本','low']],['塩','オリーブ油'],['大豆'],15,['きのこは食べやすく分ける。','フライパンにオリーブ油とにんにく・赤唐辛子を入れ弱火で香りを出す。','きのこを加えて塩で味付けしオイルが絡むまで炒める。']),
+    d(127,'ほうれん草の卵とじ','veg','main',[['ほうれん草',1,'束'],['玉ねぎ',0.5,'個'],['たまご',3,'個']],['だし','醤油','みりん','砂糖'],['卵','大豆'],15,['ほうれん草は塩茹でして4cm長さに切る。','鍋にだし・醤油・みりん・砂糖を入れ煮立てる。','玉ねぎとほうれん草を加えて煮て溶き卵でとじる。']),
+    d(128,'豆腐とキムチの炒め','veg','main',[['木綿豆腐',1,'丁'],['キムチ',150,'g'],['にら',0.5,'束'],['ごま',5,'g','low']],['醤油','ごま油'],['大豆'],15,['豆腐は水切りして一口大に切る。','フライパンにごま油を熱し豆腐を焼く。','キムチ・にらを加えて炒め醤油で味付けしごまを振る。']),
+    d(129,'根菜の揚げびたし','veg','main',[['れんこん',150,'g'],['ごぼう',1,'本'],['にんじん',0.5,'本']],['だし','醤油','みりん','砂糖','酢'],['大豆'],25,['根菜は食べやすく切りれんこんは酢水にさらす。','170℃の油で素揚げにする。','だし・醤油・みりん・砂糖・酢のつけ汁に熱いうちに漬ける。']),
+    d(130,'ラタトゥイユ','veg','main',[['なす',1,'本'],['ズッキーニ',1,'本'],['玉ねぎ',0.5,'個'],['ピーマン',2,'個'],['トマト缶',1,'缶','low']],['塩','こしょう','オリーブ油','コンソメ'],['大豆'],30,['なす・ズッキーニ・玉ねぎ・ピーマンを一口大に切る。','鍋にオリーブ油を熱し野菜を炒める。','トマト缶・コンソメを加えて蓋をし弱火で20分煮る。']),
+
+    /* ==== 肉・副菜 追加 (131-140) ==== */
+    d(131,'手羽元の甘辛煮','meat','side',[['鶏手羽元',6,'本'],['しょうが',10,'g']],['醤油','みりん','酒','砂糖'],['大豆'],30,['手羽元を熱湯でさっと下茹でする。','鍋に醤油・みりん・酒・砂糖・しょうがを合わせ煮立てる。','手羽元を加えて落し蓋をし20分煮る。']),
+    d(132,'豚こまとごぼうの炒め煮','meat','side',[['豚こま切れ肉',150,'g'],['ごぼう',1,'本'],['にんじん',0.5,'本']],['醤油','みりん','酒','砂糖','ごま油'],['大豆'],20,['ごぼうは細切りにして水にさらしにんじんも細切りにする。','フライパンにごま油を熱し豚肉を炒め野菜を加える。','醤油・みりん・酒・砂糖で炒め煮にして汁気が飛んだら完成。']),
+    d(133,'豚バラとキャベツの塩炒め','meat','side',[['豚バラ薄切り',150,'g'],['キャベツ',4,'枚'],['にんにく',1,'片']],['塩','こしょう','ごま油'],['大豆'],10,['キャベツはざく切り、豚バラは4cm幅に切る。','フライパンにごま油とにんにくを熱し豚バラを炒める。','キャベツを加えて強火で炒め塩こしょうで味付けする。']),
+    d(134,'チキンナゲット','meat','side',[['鶏むね肉',250,'g'],['たまご',1,'個'],['薄力粉',30,'g','low']],['塩','こしょう','ナツメグ','ケチャップ'],['卵','小麦'],25,['鶏むね肉はみじん切りにする。','卵・薄力粉・塩こしょう・ナツメグと混ぜ成形する。','170℃の油で揚げてケチャップを添える。']),
+    d(135,'牛肉と玉ねぎのしぐれ煮','meat','side',[['牛こま切れ肉',200,'g'],['玉ねぎ',0.5,'個'],['しょうが',10,'g']],['醤油','みりん','酒','砂糖'],['大豆'],15,['玉ねぎは薄切りにする。','鍋に醤油・みりん・酒・砂糖・しょうがを合わせ煮立てる。','牛肉と玉ねぎを加えて炒り煮にして汁気が飛んだら完成。']),
+    d(136,'豚肉とねぎの塩炒め','meat','side',[['豚バラ薄切り',150,'g'],['長ねぎ',2,'本']],['塩','こしょう','ごま油','酒'],['大豆'],15,['長ねぎは4cm長さに切る。','フライパンにごま油を熱し豚バラを炒める。','長ねぎを加えて酒・塩こしょうで味付けする。']),
+    d(137,'ウィンナーと野菜のケチャップ炒め','meat','side',[['ウィンナー',6,'本'],['玉ねぎ',0.5,'個'],['ピーマン',2,'個'],['にんじん',0.25,'本']],['ケチャップ','塩','こしょう','ウスターソース'],['大豆','小麦'],10,['玉ねぎ・ピーマン・にんじんを食べやすく切りウィンナーは斜め切りにする。','フライパンに油を熱し炒める。','ケチャップ・ウスターソース・塩こしょうで味付けする。']),
+    d(138,'豚ひき肉のそぼろあんかけ','meat','side',[['豚ひき肉',150,'g'],['絹豆腐',1,'丁'],['にんじん',0.25,'本'],['長ねぎ',0.25,'本'],['片栗粉',10,'g','low']],['だし','醤油','みりん','酒','砂糖'],['大豆','小麦'],20,['にんじん・長ねぎをみじん切りにする。','鍋にだしを入れ豚ひき肉・にんじんを煮て醤油・みりん・酒・砂糖で味付けする。','水溶き片栗粉でとろみをつけ豆腐にかける。']),
+    d(139,'鶏もも肉の塩レモン焼き','meat','side',[['鶏もも肉',200,'g'],['レモン',0.5,'個']],['塩','こしょう','オリーブ油'],['大豆'],20,['鶏もも肉に塩こしょうとレモン汁をまぶして15分漬ける。','フライパンにオリーブ油を熱し皮目から焼く。','裏返して蓋をし蒸し焼きにしてレモンスライスを添える。']),
+    d(140,'鶏ハムのサラダ仕立て','meat','side',[['鶏むね肉',1,'枚'],['レタス',3,'枚'],['ミニトマト',6,'個'],['塩麹',20,'g','low']],['塩','こしょう','ごま油'],['大豆'],40,['鶏むね肉に塩麹・塩こしょうを塗りラップで包む。','沸騰したお湯で5分茹でて火を止め30分以上置く。','薄切りにしてレタス・ミニトマトと盛り付けごま油をかける。']),
+
+    /* ==== 魚・副菜 追加 (141-150) ==== */
+    d(141,'ツナとポテトのマヨ炒め','fish','side',[['じゃがいも',2,'個'],['ツナ缶',1,'缶','low'],['玉ねぎ',0.25,'個']],['塩','こしょう','マヨネーズ','醤油'],['卵','大豆'],15,['じゃがいもは薄切りにしてレンジで加熱する。','玉ねぎは薄切りにしてフライパンで炒める。','じゃがいも・ツナを加えてマヨネーズ・醤油・塩こしょうで炒める。']),
+    d(142,'かにかまときゅうりの酢の物','fish','side',[['かにかまぼこ',6,'本','low'],['きゅうり',2,'本'],['わかめ',10,'g','low']],['酢','砂糖','塩','醤油'],['大豆','小麦'],10,['きゅうりは薄切りにして塩もみし水気を絞る。かにかまは裂く。','わかめは水で戻して切る。','酢・砂糖・塩・醤油で和える。']),
+    d(143,'えびとブロッコリーの炒め','fish','side',[['むきえび',150,'g'],['ブロッコリー',0.5,'株'],['にんにく',1,'片']],['塩','こしょう','酒','オリーブ油'],['えび'],15,['えびは背わたを取りブロッコリーは小房に分けて塩茹でする。','フライパンにオリーブ油とにんにくを熱しえびを炒める。','ブロッコリーを加えて塩こしょうで味付けする。']),
+    d(144,'まぐろの漬け','fish','side',[['まぐろ（刺身用）',150,'g'],['大葉',5,'枚'],['わさび',5,'g','low']],['醤油','みりん'],['大豆'],10,['醤油・みりんを合わせた漬けだれを作る。','まぐろを漬けだれに10分以上漬ける。','大葉を敷いて盛り付けわさびを添える。']),
+    d(145,'いかとセロリの炒め','fish','side',[['するめいか',1,'杯'],['セロリ',1,'本'],['長ねぎ',0.5,'本']],['塩','こしょう','酒','ごま油'],['大豆'],15,['いかは食べやすく切りセロリと長ねぎは斜め切りにする。','フライパンにごま油を熱していかを炒める。','野菜を加えて酒・塩こしょうで味付けする。']),
+    d(146,'えびと卵の炒め','fish','side',[['むきえび',150,'g'],['たまご',3,'個'],['長ねぎ',0.5,'本']],['塩','こしょう','鶏がらスープの素','ごま油'],['えび','卵'],15,['えびは背わたを取る。溶き卵に塩こしょうを加える。','フライパンにごま油を熱しえびを炒め卵を流し込んで半熟で混ぜる。','長ねぎを加えて鶏がらスープの素で味付けする。']),
+    d(147,'ちりめんじゃこと大根のサラダ','fish','side',[['大根',200,'g'],['ちりめんじゃこ',30,'g'],['大葉',5,'枚'],['ごま',5,'g','low']],['醤油','酢','砂糖','ごま油'],['大豆'],10,['大根は細切りにして塩もみし水気を絞る。大葉は細切りにする。','大根・じゃこ・大葉・ごまを醤油・酢・砂糖・ごま油のドレッシングで和える。']),
+    d(148,'あさりのみそ炒め','fish','side',[['あさり',200,'g'],['長ねぎ',0.5,'本'],['しょうが',10,'g']],['みそ','みりん','酒','砂糖','ごま油'],['大豆'],15,['あさりは砂抜きして擦り洗いする。','フライパンにごま油を熱し長ねぎ・しょうがを炒める。','あさりを加えて酒を振り蓋をし口が開いたらみそ・みりん・砂糖で味付けする。']),
+    d(149,'鯖の竜田揚げ（副菜）','fish','side',[['鯖',2,'切れ'],['しょうが',10,'g'],['片栗粉',30,'g','low']],['醤油','みりん','酒'],['大豆','小麦'],20,['鯖を一口大に切り醤油・みりん・酒・しょうがで10分漬ける。','片栗粉をまぶして180℃の油で揚げる。','油をきってレモンを添える。']),
+    d(150,'焼きホタテのバター醤油','fish','side',[['ほたて貝柱',4,'個'],['バター',10,'g','low'],['レモン',0.5,'個']],['塩','こしょう','醤油'],['乳','大豆'],10,['ほたて貝柱に塩こしょうをする。','フライパンにバターを熱しほたてを両面さっと焼く。','醤油を回しかけてレモンを添える。']),
+
+    /* ==== 野菜・副菜 追加 (151-160) ==== */
+    d(151,'ほうれん草の白和え','veg','side',[['ほうれん草',1,'束'],['木綿豆腐',0.5,'丁'],['すりごま',10,'g','low']],['砂糖','塩','醤油','みりん'],['大豆'],15,['ほうれん草は塩茹でして4cm長さに切り水気を絞る。','木綿豆腐は水切りしてすりつぶす。','豆腐・すりごま・砂糖・塩・醤油・みりんを合わせてほうれん草と和える。']),
+    d(152,'里芋の煮っころがし','veg','side',[['里芋',6,'個']],['だし','醤油','みりん','砂糖'],['大豆'],25,['里芋は皮をむいて下茹でしてぬめりを取る。','鍋にだし・醤油・みりん・砂糖を合わせ煮立てる。','里芋を加えて落し蓋をし汁気がなくなるまで煮絡める。']),
+    d(153,'春菊のごまあえ','veg','side',[['春菊',1,'束'],['すりごま',8,'g','low']],['醤油','砂糖','みりん'],['大豆'],10,['春菊は塩茹でして冷水にとり水気を絞る。','4cm長さに切る。','すりごま・醤油・砂糖・みりんで和える。']),
+    d(154,'玉ねぎのマリネ','veg','side',[['玉ねぎ',2,'個'],['にんじん',0.25,'本']],['酢','砂糖','塩','オリーブ油'],['大豆'],15,['玉ねぎ・にんじんを薄切りにして塩もみし水気を絞る。','酢・砂糖・塩・オリーブ油でマリネ液を作る。','野菜とマリネ液を和えて30分以上漬ける。']),
+    d(155,'アボカドと豆腐のサラダ','veg','side',[['アボカド',1,'個'],['絹豆腐',0.5,'丁'],['ミニトマト',6,'個']],['醤油','ごま油','塩'],['大豆'],10,['アボカドは角切り、豆腐は一口大に切る。','ミニトマトは半分に切る。','醤油・ごま油・塩でドレッシングを作り和える。']),
+    d(156,'ズッキーニのソテー','veg','side',[['ズッキーニ',2,'本'],['にんにく',1,'片']],['塩','こしょう','オリーブ油'],['大豆'],10,['ズッキーニは輪切りにする。','フライパンにオリーブ油とにんにくを熱す。','ズッキーニを炒め塩こしょうで味付けする。']),
+    d(157,'かぼちゃのサラダ','veg','side',[['かぼちゃ',300,'g'],['マヨネーズ',30,'g','low'],['レーズン',10,'g','low']],['塩','こしょう','砂糖'],['卵'],20,['かぼちゃをレンジで加熱し熱いうちに潰す。','マヨネーズ・レーズン・塩こしょう・砂糖少量と和える。','冷ましてから盛り付ける。']),
+    d(158,'にんじんのしりしり','veg','side',[['にんじん',2,'本'],['たまご',2,'個'],['ごま',5,'g','low']],['塩','醤油','ごま油','だし'],['卵','大豆'],10,['にんじんは千切りにする。','フライパンにごま油を熱してにんじんを炒める。','だし・醤油・塩で味付けし溶き卵を流し込んでごまを振る。']),
+    d(159,'スナップえんどうのバター炒め','veg','side',[['スナップえんどう',150,'g'],['にんにく',1,'片'],['バター',10,'g','low']],['塩','こしょう'],['乳'],10,['スナップえんどうは筋を取り斜め半分に切る。','フライパンにバターとにんにくを熱す。','スナップえんどうを炒めて塩こしょうで味付けする。']),
+    d(160,'長ねぎとわかめのポン酢和え','veg','side',[['長ねぎ',2,'本'],['わかめ',15,'g','low'],['ごま',5,'g','low']],['ポン酢','ごま油'],['大豆'],10,['長ねぎの白い部分を千切りにして水にさらし水気を切る。','わかめは水で戻して食べやすく切る。','長ねぎ・わかめ・ごまをポン酢・ごま油で和える。']),
+
+    /* ==== 汁物 追加 (161-170) ==== */
+    d(161,'鶏ごぼうのみそ汁','meat','soup',[['鶏もも肉',100,'g'],['ごぼう',0.25,'本'],['にんじん',0.25,'本'],['長ねぎ',0.25,'本']],['みそ','だし'],['大豆'],20,['鶏もも肉は小さく切りごぼう・にんじんは薄切りにする。','だし汁に鶏肉とごぼう・にんじんを入れて煮る。','火が通ったら長ねぎを加えてみそを溶き入れる。']),
+    d(162,'豚バラとほうれん草のスープ','meat','soup',[['豚バラ薄切り',100,'g'],['ほうれん草',0.5,'束'],['しょうが',10,'g']],['鶏がらスープの素','醤油','塩','ごま油'],['大豆'],15,['豚バラは食べやすく切りほうれん草は4cm長さに切る。','鍋に水と鶏がらスープの素を入れ煮立て豚バラとしょうがを加える。','ほうれん草を加えて醤油・塩・ごま油で味付けする。']),
+    d(163,'さつまいものみそ汁','veg','soup',[['さつまいも',0.5,'本'],['玉ねぎ',0.25,'個'],['長ねぎ',0.25,'本']],['みそ','だし'],['大豆'],15,['さつまいもは薄切りにし玉ねぎは薄切りにする。','だし汁を煮立ててさつまいも・玉ねぎを加えて柔らかくなるまで煮る。','長ねぎを加えてみそを溶き入れる。']),
+    d(164,'えのきとわかめのみそ汁','veg','soup',[['えのき',0.5,'袋'],['わかめ',5,'g','low'],['長ねぎ',0.25,'本']],['みそ','だし'],['大豆'],10,['えのきは石突を切りほぐす。わかめは水で戻す。','だし汁を煮立ててえのき・長ねぎを加えて煮る。','わかめを加えてみそを溶き入れる。']),
+    d(165,'ミネストローネ','meat','soup',[['玉ねぎ',0.5,'個'],['にんじん',0.5,'本'],['セロリ',0.5,'本'],['トマト缶',1,'缶','low'],['ベーコン',2,'枚']],['コンソメ','塩','こしょう','オリーブ油'],['大豆','小麦'],25,['野菜は1cm角に切りベーコンは小切れにする。','鍋にオリーブ油を熱して野菜とベーコンを炒める。','水・トマト缶・コンソメを加えて野菜が柔らかくなるまで煮て塩こしょうで味を整える。']),
+    d(166,'白菜と豆腐の中華スープ','veg','soup',[['白菜',3,'枚'],['絹豆腐',0.5,'丁'],['しょうが',5,'g'],['長ねぎ',0.25,'本']],['鶏がらスープの素','醤油','塩','ごま油'],['大豆'],15,['白菜は4cm幅、豆腐は角切り、長ねぎは小口切りにする。','鍋に水・鶏がらスープの素を入れ煮立てる。','白菜・豆腐・しょうが・長ねぎを加えて煮て醤油・塩・ごま油で味付けする。']),
+    d(167,'あさりのスープ','fish','soup',[['あさり',150,'g'],['玉ねぎ',0.25,'個'],['セロリ',0.25,'本'],['バター',10,'g','low']],['塩','こしょう','白ワイン','コンソメ'],['乳','大豆'],20,['あさりは砂抜きして擦り洗いする。','鍋にバターを熱して玉ねぎ・セロリを炒め白ワインを加える。','あさり・コンソメ・水を加えて蓋をして煮て塩こしょうで味を整える。']),
+    d(168,'えびと野菜のスープ','fish','soup',[['むきえび',100,'g'],['玉ねぎ',0.25,'個'],['にんじん',0.25,'本'],['じゃがいも',1,'個']],['コンソメ','塩','こしょう'],['えび'],20,['えびは背わたを取り野菜は食べやすく切る。','鍋に水・コンソメを入れ煮立て野菜を加えて煮る。','えびを加えて塩こしょうで味を整える。']),
+    d(169,'ほうれん草と卵の中華スープ','veg','soup',[['ほうれん草',0.5,'束'],['たまご',1,'個'],['長ねぎ',0.25,'本']],['鶏がらスープの素','醤油','塩','ごま油'],['卵','大豆'],10,['ほうれん草は4cm長さに切る。','鍋に水・鶏がらスープの素を入れ煮立てほうれん草・長ねぎを加えて煮る。','溶き卵を流し入れて醤油・塩・ごま油で味付けする。']),
+    d(170,'きのこのみそ汁','veg','soup',[['しいたけ',3,'枚'],['しめじ',0.5,'パック'],['えのき',0.5,'袋'],['長ねぎ',0.25,'本']],['みそ','だし'],['大豆'],10,['きのこは食べやすく切りほぐす。長ねぎは小口切りにする。','だし汁を煮立ててきのこを加えて煮る。','長ねぎを加えてみそを溶き入れる。']),
+  ];
+})();
+
+/* ===========================
+   SAUCE RECIPES — たれレシピ（4人分基準）
+   =========================== */
+(function() {
+  const SAUCE_MAP = {
+    1:  {name:'から揚げの下味だれ',ings:[['醤油',2,'大さじ'],['みりん',1,'大さじ'],['酒',1,'大さじ']],steps:['材料をすべて合わせて混ぜる。','鶏肉に揉み込み15分漬ける。']},
+    2:  {name:'生姜焼きのたれ',ings:[['醤油',2,'大さじ'],['みりん',1.5,'大さじ'],['酒',1,'大さじ'],['砂糖',1,'小さじ']],steps:['すべての材料を合わせて混ぜる。','炒めた豚肉に加えて炒め絡める。']},
+    3:  {name:'照り焼きのたれ',ings:[['醤油',2,'大さじ'],['みりん',2,'大さじ'],['酒',1,'大さじ'],['砂糖',1,'大さじ']],steps:['材料をすべて合わせて混ぜる。','焼いた鶏肉に加えて絡めながら照りを出す。']},
+    5:  {name:'炒め物のたれ',ings:[['醤油',1.5,'大さじ'],['みりん',1,'大さじ'],['オイスターソース',1,'大さじ'],['ごま油',1,'小さじ']],steps:['すべての材料を合わせて混ぜる。','炒めた食材に加えて炒め絡める。']},
+    7:  {name:'煮物のたれ',ings:[['醤油',3,'大さじ'],['みりん',3,'大さじ'],['酒',3,'大さじ'],['砂糖',1.5,'大さじ']],steps:['材料をすべて合わせる。','鍋に食材とともに入れて落し蓋をして煮る。']},
+    8:  {name:'南蛮漬けのたれ（甘酢）',ings:[['醤油',2,'大さじ'],['酢',3,'大さじ'],['砂糖',2,'大さじ'],['みりん',1,'大さじ']],steps:['材料をすべて合わせて混ぜる。','揚げた鶏肉と野菜を熱いうちに漬ける。']},
+    9:  {name:'ハンバーグソース',ings:[['ケチャップ',3,'大さじ'],['ウスターソース',2,'大さじ']],steps:['ケチャップとウスターソースを合わせる。','ハンバーグを焼いたフライパンで軽く煮詰めてかける。']},
+    10: {name:'みそだれ',ings:[['みそ',1.5,'大さじ'],['みりん',1,'大さじ'],['酒',1,'大さじ'],['砂糖',1,'小さじ']],steps:['すべての材料を合わせて混ぜる。','炒めた食材に加えて炒め絡める。']},
+    13: {name:'竜田揚げの下味だれ',ings:[['醤油',2,'大さじ'],['みりん',1,'大さじ'],['酒',1,'大さじ']],steps:['材料をすべて合わせて混ぜる。','鶏肉に揉み込み10分漬ける。']},
+    15: {name:'麻婆ソース',ings:[['豆板醤',1,'小さじ'],['甜麺醤',1.5,'大さじ'],['醤油',1,'大さじ'],['酒',1,'大さじ'],['ごま油',1,'小さじ']],steps:['材料をすべて合わせる。','炒めたひき肉に加えてソースを作る。']},
+    22: {name:'照り焼きのたれ',ings:[['醤油',2,'大さじ'],['みりん',2,'大さじ'],['酒',1,'大さじ'],['砂糖',2,'小さじ']],steps:['材料をすべて合わせて混ぜる。','ぶりに絡めて10分漬ける、または焼いた後に加えて照りを出す。']},
+    23: {name:'みそ煮のたれ',ings:[['みそ',2,'大さじ'],['みりん',2,'大さじ'],['酒',2,'大さじ'],['砂糖',1.5,'大さじ']],steps:['材料をすべて合わせて混ぜる。','鍋で煮立て、鯖を加えて落し蓋で煮る。']},
+    27: {name:'梅煮のたれ',ings:[['醤油',2,'大さじ'],['みりん',2,'大さじ'],['酒',2,'大さじ'],['砂糖',1,'大さじ']],steps:['材料と梅干しを鍋に合わせて煮立てる。','いわしを加えて落し蓋で煮る。']},
+    32: {name:'南蛮漬けのたれ（甘酢）',ings:[['醤油',2,'大さじ'],['酢',3,'大さじ'],['砂糖',2,'大さじ']],steps:['材料をすべて合わせて混ぜる。','揚げたあじを熱いうちに漬ける。']},
+    34: {name:'チリソース',ings:[['豆板醤',1,'小さじ'],['ケチャップ',2,'大さじ'],['酒',1,'大さじ'],['砂糖',1,'小さじ']],steps:['材料をすべて合わせて混ぜる。','炒めた食材に加えてとろみをつける。']},
+    42: {name:'あんだれ',ings:[['醤油',1.5,'大さじ'],['みりん',1.5,'大さじ'],['酒',1,'大さじ'],['ごま油',1,'小さじ']],steps:['材料をすべて合わせて混ぜる。','しょうが・しめじと共に加熱してとろみをつける。']},
+    48: {name:'みそだれ',ings:[['みそ',1.5,'大さじ'],['みりん',1,'大さじ'],['酒',1,'大さじ'],['砂糖',1,'小さじ'],['ごま油',1,'小さじ']],steps:['すべての材料を合わせて混ぜる。','炒めた食材に加えて炒め絡める。']},
+    51: {name:'つくねのたれ',ings:[['醤油',2,'大さじ'],['みりん',2,'大さじ'],['酒',1,'大さじ'],['砂糖',1,'大さじ']],steps:['材料をすべて合わせて混ぜる。','焼いたつくねに絡めて照りを出す。']},
+    65: {name:'たたきのたれ',ings:[['みそ',1,'大さじ'],['醤油',1,'小さじ'],['ごま油',1,'小さじ']],steps:['材料をすべて合わせて混ぜる。','たたいたあじに和える。']},
+  };
+  DISH_MASTER.forEach(dish => { dish.sauce = SAUCE_MAP[dish.id] || null; });
+})();
+
+/* ===========================
+   MENU MODULE
+   =========================== */
+const Menu = (() => {
+  // カテゴリローテーション（月〜日）
+  const CAT_ROTATION = ['meat','fish','veg','meat','fish','veg','meat'];
+  const CAT_LABEL = { meat:'肉', fish:'魚', veg:'野菜' };
+  const TYPE_LABEL = { main:'主菜', side:'副菜', soup:'汁物' };
+
+  let currentWeek = null;
+  let lastWeek    = [];
+  let activeDay   = 0;
+  let swapContext = null;
+
+  function getSettings()     { return Settings.getSettings(); }
+  function getFamily()       { return Store.get('meguri_family', []); }
+  function getFamilyAllergens() {
+    return [...new Set(getFamily().flatMap(m => m.allergies || []))];
+  }
+  function hasAllergyConflict(dish, allergens) {
+    return allergens.length > 0 && dish.allergens.some(a => allergens.includes(a));
+  }
+
+  // 使用済み食材を収集
+  function getUsedIngredients(upToIdx) {
+    if (!currentWeek) return new Set();
+    const used = new Set();
+    currentWeek.days.slice(0, upToIdx).forEach(day => {
+      [day.dinner?.main, ...(day.dinner?.sides||[])].filter(Boolean).forEach(id => {
+        DISH_MASTER.find(d => d.id === id)?.ingredients.forEach(i => used.add(i.name));
+      });
+    });
+    return used;
+  }
+
+  // 候補抽出（スコア順）
+  function getCandidates(category, type, excludeIds, allergens, usedIngredients, count = 3) {
+    const eligible = DISH_MASTER.filter(d =>
+      d.category === category &&
+      d.type === type &&
+      !excludeIds.includes(d.id) &&
+      !hasAllergyConflict(d, allergens)
+    );
+    const scored = eligible.map(d => ({
+      ...d,
+      score: d.ingredients.filter(i => usedIngredients.has(i.name)).length + Math.random() * 0.5
+    })).sort((a, b) => b.score - a.score);
+    return scored.slice(0, Math.max(count, 3)).map(d => d.id);
+  }
+
+  // ---- 献立生成 ----
+  function generate() {
+    const settings   = getSettings();
+    const allergens  = getFamilyAllergens();
+    const lastIds    = lastWeek.map(d => d?.main).filter(Boolean);
+    const weekDates  = getWeekDates();
+    const usedIds    = [...lastIds];
+
+    const days = weekDates.map((date, i) => ({
+      date: date.toISOString(),
+      category: CAT_ROTATION[i],
+      dinner: { main: null, sides: [] },
+      candidates: []
+    }));
+
+    days.forEach((day, i) => {
+      const used = getUsedIngredientsCustom(days, i);
+      const cands = getCandidates(day.category, 'main', usedIds, allergens, used, 3);
+      day.candidates = cands;
+      if (cands[0]) { day.dinner.main = cands[0]; usedIds.push(cands[0]); }
+
+      // 副菜自動選択
+      const struct = settings.dinnerStruct || 'main1';
+      if (struct === 'main1side1' || struct === 'main1side2') {
+        const sideCount = struct === 'main1side1' ? 1 : 2;
+        for (let si = 0; si < sideCount; si++) {
+          const sideCands = getCandidates('veg', 'side', usedIds, allergens, used, 1);
+          if (sideCands[0]) { day.dinner.sides[si] = sideCands[0]; usedIds.push(sideCands[0]); }
+        }
+      } else if (struct === 'side1') {
+        day.dinner.main = null;
+        const sideCands = getCandidates('veg', 'side', usedIds, allergens, used, 1);
+        if (sideCands[0]) { day.dinner.sides[0] = sideCands[0]; usedIds.push(sideCands[0]); }
+      }
+    });
+
+    currentWeek = { generated: new Date().toISOString(), days };
+    Store.set('meguri_current_week', currentWeek);
+    activeDay = 0;
+    renderAll();
+    showToast('今週の献立を生成しました！');
+  }
+
+  function getUsedIngredientsCustom(days, upToIdx) {
+    const used = new Set();
+    days.slice(0, upToIdx).forEach(day => {
+      [day.dinner?.main, ...(day.dinner?.sides||[])].filter(Boolean).forEach(id => {
+        DISH_MASTER.find(d => d.id === id)?.ingredients.forEach(i => used.add(i.name));
+      });
+    });
+    return used;
+  }
+
+  // ---- 差し替えモーダル ----
+  function openSwap(dayIdx, slotType) {
+    if (!currentWeek) return;
+    swapContext = { dayIdx, slotType };
+    const day = currentWeek.days[dayIdx];
+    const allergens = getFamilyAllergens();
+    const allUsedIds = currentWeek.days.flatMap(d =>
+      [d.dinner?.main, ...(d.dinner?.sides||[])].filter(Boolean)
+    );
+    const currentSlotId = slotType === 'main' ? day.dinner.main
+      : day.dinner.sides[parseInt(slotType.replace('side',''))];
+    const excludeIds = allUsedIds.filter(id => id !== currentSlotId);
+
+    const used = getUsedIngredientsCustom(currentWeek.days, dayIdx);
+    let eligible;
+    if (slotType === 'main') {
+      const pickCat = (cat, n) => DISH_MASTER.filter(d =>
+        d.category === cat && d.type === 'main' &&
+        !excludeIds.includes(d.id) &&
+        !hasAllergyConflict(d, allergens)
+      ).sort(() => Math.random() - 0.5).slice(0, n);
+      eligible = [...pickCat('fish', 2), ...pickCat('meat', 2), ...pickCat('veg', 1)]
+        .sort(() => Math.random() - 0.5);
+    } else {
+      eligible = DISH_MASTER.filter(d =>
+        d.category === 'veg' && d.type === 'side' &&
+        !excludeIds.includes(d.id) &&
+        !hasAllergyConflict(d, allergens)
+      ).sort(() => Math.random() - 0.5).slice(0, 5);
+    }
+
+    const body = document.getElementById('swapModalBody');
+    const title = document.getElementById('swapModalTitle');
+    if (title) title.textContent = slotType === 'main' ? '主菜を差し替える（魚2・肉2・野菜1）' : '副菜を差し替える';
+    if (body) {
+      body.innerHTML = eligible.length ? eligible.map(dish => `
+        <div class="meal-card" onclick="Menu.confirmSwap(${dish.id})" style="cursor:pointer;margin-bottom:8px;">
+          <div class="meal-card__header">
+            <div class="meal-card__name">${dish.name}</div>
+            <span class="tag ${dish.category==='meat'?'tag-meat':dish.category==='fish'?'tag-fish':'tag-veg'}">${CAT_LABEL[dish.category]}</span>
+          </div>
+          <div style="padding:0 14px 10px;" class="text-xs text-muted">
+            ${dish.ingredients.map(i=>i.name).join('・')}
+          </div>
+        </div>`).join('') :
+        '<p class="text-sm text-muted">候補がありません</p>';
+    }
+    openModal('modal-swap');
+  }
+
+  function confirmSwap(dishId) {
+    if (!swapContext || !currentWeek) return;
+    const { dayIdx, slotType } = swapContext;
+    const day = currentWeek.days[dayIdx];
+    if (slotType === 'main') {
+      day.dinner.main = dishId;
+      day.candidates  = [dishId, ...day.candidates.filter(id=>id!==dishId)].slice(0,3);
+    } else {
+      const si = parseInt(slotType.replace('side',''));
+      day.dinner.sides[si] = dishId;
+    }
+    Store.set('meguri_current_week', currentWeek);
+    closeModal('modal-swap');
+    renderAll();
+    showToast('差し替えました');
+  }
+
+  // 主菜選択（候補タップ）
+  function selectMain(dayIdx, dishId) {
+    if (!currentWeek) return;
+    currentWeek.days[dayIdx].dinner.main = dishId;
+    Store.set('meguri_current_week', currentWeek);
+    renderDayTabs();
+    renderDayContent(dayIdx);
+    renderSeasoningBanner();
+  }
+
+  // ---- 描画 ----
+  function renderAll() {
+    renderDayTabs();
+    renderDayContent(activeDay);
+    renderSeasoningBanner();
+  }
+
+  function setDay(idx) {
+    activeDay = idx;
+    renderDayTabs();
+    renderDayContent(idx);
+  }
+
+  function renderDayTabs() {
+    const el = document.getElementById('menuDayTabs');
+    if (!el) return;
+    const weekDates = currentWeek
+      ? currentWeek.days.map(d => new Date(d.date))
+      : getWeekDates();
+    el.innerHTML = weekDates.map((date, i) => {
+      const dayName = DAY_NAMES_JA[date.getDay()];
+      const eot      = currentWeek?.days[i]?.eatingOutType || null;
+      const confirmed = !eot && currentWeek?.days[i]?.dinner?.main != null;
+      const eotLabel  = eot === 'eatingOut' ? '外食' : eot === 'busy' ? '予定' : '';
+      return `<button class="day-tab ${i===activeDay?'active':''}" onclick="Menu.setDay(${i})">
+        ${dayName}<span style="display:block;font-size:.65rem;">${formatDate(date)}</span>
+        ${eot
+          ? `<span style="color:var(--text-muted);font-size:.5rem;line-height:1;">${eotLabel}</span>`
+          : confirmed ? '<span style="color:var(--success);font-size:.5rem;line-height:1;">●確定</span>' : ''}
+      </button>`;
+    }).join('');
+  }
+
+  function renderDayContent(idx) {
+    const el = document.getElementById('menuDayContent');
+    if (!el) return;
+    if (!currentWeek) {
+      el.innerHTML = `<div class="empty-state">
+        <div class="empty-state__icon">🍽️</div>
+        <div class="empty-state__text">「今週の献立を生成」を押して<br>献立を作成してください</div>
+      </div>`;
+      return;
+    }
+    const day  = currentWeek.days[idx];
+    const date = new Date(day.date);
+    const settings = getSettings();
+    el.innerHTML = renderBreakfastCard(date, settings) +
+      `<div class="card"><div class="card__title">昼食</div><p class="text-sm text-muted">各自・外食など</p></div>` +
+      renderDinnerCard(day, idx, settings);
+  }
+
+  function renderBreakfastCard(date, settings) {
+    const style = settings.breakfastStyle || 'japanese';
+    if (style === 'none') return '';
+    const d = date.getDate();
+    const items = (style==='japanese' || (style==='mixed' && d%2===0))
+      ? ['ごはん','みそ汁','たまご料理','納豆']
+      : ['食パン','たまご料理','牛乳','ヨーグルト'];
+    return `<div class="card"><div class="card__title">朝食</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        ${items.map(i=>`<span class="tag" style="background:var(--bg-muted);color:var(--text-secondary);">${i}</span>`).join('')}
+      </div></div>`;
+  }
+
+  function renderDinnerCard(day, dayIdx, settings) {
+    if (day.eatingOutType) {
+      const isEatingOut = day.eatingOutType === 'eatingOut';
+      const icon  = isEatingOut ? '🍽️' : '📅';
+      const label = isEatingOut ? '外食の日' : '予定ありの日';
+      return `<div class="card">
+        <div class="card__title">夕食</div>
+        <div style="text-align:center;padding:20px 0 16px;">
+          <div style="font-size:2.2rem;margin-bottom:8px;">${icon}</div>
+          <div style="font-size:.95rem;font-weight:600;color:var(--text-secondary);">${label}</div>
+          <div style="font-size:.78rem;color:var(--text-muted);margin-top:4px;">買い物リストには含まれません</div>
+        </div>
+        <button class="btn btn-secondary btn-sm w-full" onclick="Menu.setEatingOutType(${dayIdx},null)">↺ 自炊に戻す</button>
+      </div>`;
+    }
+
+    const struct = settings.dinnerStruct || 'main1';
+    const dinner = day.dinner;
+    const cands  = day.candidates || [];
+    const catLabel = CAT_LABEL[day.category] || '';
+
+    let html = `<div class="card">
+      <div class="card__title" style="flex-wrap:wrap;gap:6px;">
+        <span style="display:flex;align-items:center;gap:8px;flex:1;">夕食
+          ${struct !== 'side1' ? `<span class="tag ${day.category==='meat'?'tag-meat':day.category==='fish'?'tag-fish':'tag-veg'}" style="font-size:.7rem;">${catLabel}の日</span>` : ''}
+        </span>
+        <button class="btn btn-secondary btn-sm" style="font-size:.72rem;padding:4px 10px;" onclick="Menu.setEatingOutType(${dayIdx},'eatingOut')">🍽️ 外食</button>
+        <button class="btn btn-secondary btn-sm" style="font-size:.72rem;padding:4px 10px;" onclick="Menu.setEatingOutType(${dayIdx},'busy')">📅 予定あり</button>
+      </div>`;
+
+    // 主菜候補（副菜のみの場合は表示しない）
+    if (struct !== 'side1') {
+      html += `<div style="font-size:.75rem;color:var(--text-muted);margin-bottom:10px;">タップして主菜を選択</div>`;
+      cands.forEach(cid => {
+        const dish = DISH_MASTER.find(d => d.id === cid);
+        if (!dish) return;
+        const sel = dinner.main === cid;
+        html += dishCard(dish, sel, `Menu.selectMain(${dayIdx},${cid})`);
+      });
+      if (dinner.main) {
+        html += `<button class="btn btn-ghost btn-sm w-full mt-8" onclick="Menu.openSwap(${dayIdx},'main')">↺ 別の料理に差し替え（5候補から選択）</button>`;
+      }
+    }
+
+    // 副菜
+    if (struct === 'main1side1' || struct === 'main1side2') {
+      const sideCount = struct==='main1side1' ? 1 : 2;
+      html += '<div class="divider"></div>';
+      for (let si = 0; si < sideCount; si++) {
+        const sid  = dinner.sides?.[si];
+        const sd   = sid ? DISH_MASTER.find(d=>d.id===sid) : null;
+        html += `<div style="font-size:.78rem;font-weight:600;color:var(--text-secondary);margin:8px 0 6px;">副菜${sideCount>1?si+1:''}</div>`;
+        if (sd) {
+          html += dishCard(sd, true, null);
+          html += `<button class="btn btn-ghost btn-sm w-full mt-4" onclick="Menu.openSwap(${dayIdx},'side${si}')">↺ 副菜を差し替え</button>`;
+        } else {
+          html += `<button class="btn btn-secondary btn-sm w-full" onclick="Menu.openSwap(${dayIdx},'side${si}')">＋ 副菜を選ぶ</button>`;
+        }
+      }
+    } else if (struct === 'side1') {
+      const sid = dinner.sides?.[0];
+      const sd  = sid ? DISH_MASTER.find(d=>d.id===sid) : null;
+      html += '<div class="divider"></div>';
+      html += `<div style="font-size:.78rem;font-weight:600;color:var(--text-secondary);margin:8px 0 6px;">副菜</div>`;
+      if (sd) {
+        html += dishCard(sd, true, null);
+        html += `<button class="btn btn-ghost btn-sm w-full mt-4" onclick="Menu.openSwap(${dayIdx},'side0')">↺ 副菜を差し替え</button>`;
+      } else {
+        html += `<button class="btn btn-secondary btn-sm w-full" onclick="Menu.openSwap(${dayIdx},'side0')">＋ 副菜を選ぶ</button>`;
+      }
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function dishCard(dish, isSelected, onclickStr) {
+    const catCls = dish.category==='meat'?'tag-meat':dish.category==='fish'?'tag-fish':'tag-veg';
+    const ingTxt = dish.ingredients.map(i=>`${i.name}`).join('・');
+    return `<div class="meal-card ${isSelected?'selected':''}"
+      ${onclickStr?`onclick="${onclickStr}" style="cursor:pointer"`:''}
+      style="margin-bottom:8px;${onclickStr?'cursor:pointer':''}">
+      <div class="meal-card__header">
+        <div class="meal-card__name">${dish.name}</div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span class="tag ${catCls}">${CAT_LABEL[dish.category]}</span>
+          ${isSelected?'<span style="color:var(--success);font-size:1.1rem;font-weight:700;">✓</span>':''}
+        </div>
+      </div>
+      <div style="padding:0 14px 8px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <span style="font-size:.78rem;color:var(--text-muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${ingTxt}</span>
+        <button onclick="event.stopPropagation();openRecipe(${dish.id})"
+          style="flex-shrink:0;padding:3px 10px;font-size:.72rem;border:1px solid var(--accent);border-radius:20px;
+                 background:#fff;color:var(--accent);cursor:pointer;white-space:nowrap;">レシピ</button>
+      </div>
+    </div>`;
+  }
+
+  function renderSeasoningBanner() {
+    const banner = document.getElementById('seasoningBanner');
+    const list   = document.getElementById('seasoningList');
+    if (!banner || !list || !currentWeek) { if(banner) banner.style.display='none'; return; }
+    const all = new Set();
+    currentWeek.days.forEach(day => {
+      [day.dinner?.main, ...(day.dinner?.sides||[])].filter(Boolean).forEach(id => {
+        DISH_MASTER.find(d=>d.id===id)?.seasonings?.forEach(s=>all.add(s));
+      });
+    });
+    if (all.size) { banner.style.display='flex'; list.textContent=[...all].join('　/　'); }
+    else banner.style.display='none';
+  }
+
+  function reset() {
+    if (!currentWeek) { showToast('献立がありません'); return; }
+    if (!confirm('今週の献立をリセットしますか？先週履歴として保存されます。')) return;
+    Store.set('meguri_last_week', currentWeek.days.map(d=>({main:d.dinner?.main})));
+    currentWeek = null;
+    Store.set('meguri_current_week', null);
+    activeDay = 0;
+    renderAll();
+    showToast('リセットしました');
+  }
+
+  function init() {
+    currentWeek = Store.get('meguri_current_week', null);
+    lastWeek    = Store.get('meguri_last_week', []);
+    renderAll();
+  }
+
+  function setEatingOutType(dayIdx, type) {
+    if (!currentWeek) return;
+    const day = currentWeek.days[dayIdx];
+    day.eatingOutType = type || null;
+    Store.set('meguri_current_week', currentWeek);
+    renderAll();
+    const msg = type === 'eatingOut' ? '外食の日に設定しました'
+              : type === 'busy'      ? '予定ありの日に設定しました'
+              : '自炊に戻しました';
+    showToast(msg);
+  }
+
+  return { generate, setDay, selectMain, openSwap, confirmSwap, setEatingOutType, reset, getCurrentWeek: () => currentWeek, init };
+})();
+
+Menu.init();
+
+/* ===========================
+   SHOP MODULE — 買い物リスト
+   =========================== */
+const Shop = (() => {
+
+  /* ---- スーパー名称 ---- */
+  const SUPER_NAME = {
+    life:'ライフ', aeon:'イオン', seiyu:'西友', coop:'コープ',
+    gyomu:'業務スーパー', ito:'イトーヨーカドー',
+    kansai:'関西スーパー', bandai:'万代', maruhachi:'マルハチ'
+  };
+
+  /* ---- PB価格係数 (ライフ基準=1.0) ---- */
+  const SUPER_FACTOR = {
+    life:1.00, aeon:0.95, seiyu:0.92, coop:1.02,
+    gyomu:0.82, ito:0.97, kansai:0.95, bandai:0.89, maruhachi:0.91, '':1.00
+  };
+
+  /* ---- 食材単価DB (円/購入単位) ---- */
+  const PRICE_BASE = {
+    // 肉類 (円/パック)
+    '鶏もも肉':220,'鶏むね肉':160,'鶏ひき肉':170,'鶏レバー':100,
+    '豚バラ薄切り':200,'豚バラブロック':480,'豚ロース薄切り':230,'豚ロース厚切り':260,
+    '豚こま切れ肉':190,'豚ひき肉':170,
+    '合いびき肉':240,'牛こま切れ肉':380,'スパム':280,'ウィンナー':200,
+    // 魚介類 (円/切れ or パック)
+    '生鮭':220,'ぶり':280,'鯖':200,'鯛':350,'鰆':280,'いわし':80,
+    'たら':220,'ほっけ':280,'あじ':80,'めかじき':280,'かれい':220,
+    'するめいか':280,'むきえび':320,'まぐろ（刺身用）':380,'あじ（刺身用）':260,
+    'ゆでたこ':320,'あさり':220,'はまぐり':420,'しらす':220,'明太子':280,
+    'ちくわ':110,'かまぼこ':160,
+    // 豆腐・大豆製品 (円/丁 or 枚)
+    '木綿豆腐':80,'絹豆腐':80,'厚揚げ':110,'油揚げ':80,'こんにゃく':80,
+    // 野菜 (円/個・本・袋・束)
+    '玉ねぎ':80,'大根':130,'にんじん':60,'じゃがいも':120,
+    'キャベツ':150,'白菜':200,'ほうれん草':130,'小松菜':110,
+    'ごぼう':110,'れんこん':160,'かぼちゃ':200,'なす':130,
+    'ピーマン':90,'アスパラガス':160,'アスパラ':160,'ブロッコリー':190,
+    'もやし':40,'トマト':130,'ミニトマト':160,'きゅうり':80,
+    'レタス':130,'チンゲン菜':110,'ゴーヤ':160,'長ねぎ':110,
+    'しめじ':110,'しいたけ':180,'なめこ':90,'春菊':110,'みょうが':110,
+    'かいわれ大根':90,'三つ葉':90,
+    // たまご・乳製品
+    'たまご':220,'ゆで卵':120,'牛乳':210,'生クリーム':220,
+    'バター':220,'チーズ':160,'マヨネーズ':210,'ヨーグルト':160,
+    // 乾物・保存食
+    '乾燥ひじき':160,'切り干し大根':110,'わかめ':110,'昆布':110,
+    '梅干し':220,'キムチ':220,'片栗粉':130,'薄力粉':130,
+    'パン粉':130,'塩麹':180,'西京みそ':220,'トマト缶':150,'コーン缶':110,
+    // 朝食
+    '米':2000,'みそ':300,'だし':200,'食パン':210,'納豆':100,
+    'ヨーグルト':160,
+    // その他
+    'レモン':80,'しょうが':80,'にんにく':80,'ローズマリー':100,
+    'ごま':150,'すりごま':150,
+  };
+
+  /* ---- 購入単位あたりのサイズ ---- */
+  // g単位食材: 1パック何g か
+  const PACK_G = {
+    '鶏もも肉':300,'鶏むね肉':300,'鶏ひき肉':300,'鶏レバー':200,
+    '豚バラ薄切り':300,'豚バラブロック':400,'豚ロース薄切り':300,'豚ロース厚切り':250,
+    '豚こま切れ肉':300,'豚ひき肉':300,'合いびき肉':300,'牛こま切れ肉':200,
+    'スパム':340,
+    'むきえび':200,'まぐろ（刺身用）':150,'ゆでたこ':200,'しらす':80,'明太子':60,
+    '大根':900,'しょうが':150,'れんこん':300,'かぼちゃ':600,
+    '生クリーム':200,'バター':200,'チーズ':200,'マヨネーズ':400,
+    '乾燥ひじき':50,'切り干し大根':100,'わかめ':50,'昆布':30,
+    '片栗粉':200,'薄力粉':500,'パン粉':200,'塩麹':200,'西京みそ':200,
+    'ごま':50,'すりごま':50,
+  };
+  // ml単位食材: 1パック何ml か
+  const PACK_ML = { '牛乳':1000,'生クリーム':200,'だし':600 };
+  // 個・本等の単位: 1袋/1パック何個か (default=1)
+  const PACK_N = {
+    // たまご・乳製品
+    'たまご':10,'ゆで卵':6,'納豆':3,
+    // 葉野菜（枚単位 → 1玉あたり枚数）
+    'キャベツ':16,'白菜':16,
+    // 根・茎野菜
+    '玉ねぎ':4,'にんじん':3,'じゃがいも':5,'にんにく':10,
+    'ピーマン':3,'ミニトマト':12,'なす':3,'みょうが':4,
+    // 魚・肉加工品
+    'アスパラガス':8,'アスパラ':8,
+    'ウィンナー':7,'ちくわ':5,
+    // 乾物（特殊単位）
+    '昆布':30,  // cm/袋
+  };
+
+  /* ---- 内部状態 ---- */
+  let activeShopDay = 0;
+  let checkState = {};
+  let cachedList  = null; // { byDay, shopWeekIdxes }
+
+  /* ---- ヘルパー ---- */
+  function getSettings() { return Settings.getSettings(); }
+  function getWeek()     { return Menu.getCurrentWeek(); }
+
+  // JS曜日番号(0=日) → 週インデックス(0=月)
+  function jsDayToWi(d) { return d === 0 ? 6 : d - 1; }
+
+  // 買い物曜日の週インデックス一覧(昇順)
+  function shopWIs(shopDays) {
+    return [...new Set(shopDays)].map(jsDayToWi).sort((a,b)=>a-b);
+  }
+
+  // 食材をどの買い物日(インデックス)に割り当てるか
+  function assignDay(dishWI, freshness, wis) {
+    if (!wis.length) return 0;
+    if (freshness === 'low') return 0; // 常温=最初の買い物日
+    // freshness:'high' → 料理当日以前で最も遅い買い物日
+    let best = 0;
+    wis.forEach((wi, i) => { if (wi <= dishWI) best = i; });
+    return best;
+  }
+
+  /* ---- 朝食食材 ---- */
+  function breakfastItems(style) {
+    const jp = [
+      { name:'米',     amount:1,    unit:'袋',  freshness:'low'  },
+      { name:'みそ',   amount:1,    unit:'袋',  freshness:'low'  },
+      { name:'だし',   amount:1,    unit:'袋',  freshness:'low'  },
+      { name:'たまご', amount:10,   unit:'個',  freshness:'high' }, // 10個パック、個単位で夕食分とマージ
+      { name:'納豆',   amount:3,    unit:'パック', freshness:'high' },
+    ];
+    const wt = [
+      { name:'食パン',   amount:1,    unit:'斤',  freshness:'high' },
+      { name:'たまご',   amount:10,   unit:'個',  freshness:'high' }, // 同上
+      { name:'牛乳',     amount:1000, unit:'ml',  freshness:'high' }, // 1000ml=1L、ml単位で夕食分とマージ
+      { name:'ヨーグルト', amount:1, unit:'個',  freshness:'high' },
+    ];
+    if (style === 'japanese') return jp;
+    if (style === 'western')  return wt;
+    if (style === 'mixed') {
+      const all = [...jp];
+      wt.forEach(w => { if (!all.find(j=>j.name===w.name)) all.push(w); });
+      return all;
+    }
+    return [];
+  }
+
+  /* ---- 献立から食材リストを構築 ---- */
+  function buildList() {
+    const settings = getSettings();
+    const week     = getWeek();
+    const shopDays = settings.shopDays || [];
+    const wis      = shopWIs(shopDays);
+    const weekDates = week
+      ? week.days.map(d => new Date(d.date))
+      : getWeekDates();
+
+    const raw = []; // { name, amount, unit, freshness, dishWI }
+
+    // 夕食食材（外食の日はスキップ）
+    if (week) {
+      week.days.forEach((day, i) => {
+        if (day.eatingOutType) return;
+        const ids = [day.dinner?.main, ...(day.dinner?.sides||[])].filter(Boolean);
+        ids.forEach(id => {
+          const dish = DISH_MASTER.find(d => d.id === id);
+          if (!dish) return;
+          dish.ingredients.forEach(ing => raw.push({ ...ing, dishWI: i }));
+        });
+      });
+    }
+
+    // 朝食食材
+    if (settings.breakfastInShop !== false && settings.breakfastStyle !== 'none') {
+      breakfastItems(settings.breakfastStyle || 'japanese')
+        .forEach(ing => raw.push({ ...ing, dishWI: 0 }));
+    }
+
+    // 同名食材をマージ
+    const merged = {};
+    raw.forEach(item => {
+      const k = item.name;
+      if (!merged[k]) {
+        merged[k] = { ...item };
+      } else {
+        if (merged[k].unit === item.unit) merged[k].amount += item.amount;
+        merged[k].dishWI   = Math.min(merged[k].dishWI, item.dishWI);
+        if (item.freshness === 'high') merged[k].freshness = 'high';
+      }
+    });
+
+    // 買い物日ごとに振り分け
+    const byDay = {};
+    for (let i = 0; i < wis.length; i++) byDay[i] = [];
+    Object.values(merged).forEach(item => {
+      const di = assignDay(item.dishWI, item.freshness, wis);
+      if (byDay[di] !== undefined) byDay[di].push(item);
+      else byDay[0].push(item);
+    });
+
+    // 各日の中を鮮度でソート（low先、high後）
+    Object.values(byDay).forEach(arr =>
+      arr.sort((a,b) => (a.freshness==='low'?0:1) - (b.freshness==='low'?0:1))
+    );
+
+    cachedList = { byDay, wis, weekDates };
+    return cachedList;
+  }
+
+  /* ---- 単価計算（数量スケール対応） ---- */
+  function calcPrice(name, amount, unit, supermarket) {
+    const base = PRICE_BASE[name] || 0;
+    if (!base) return 0;
+    const f = SUPER_FACTOR[supermarket] || 1.0;
+    let packs;
+    if (unit === 'g') {
+      packs = Math.max(1, Math.ceil(amount / (PACK_G[name] || 100)));
+    } else if (unit === 'ml') {
+      packs = Math.max(1, Math.ceil(amount / (PACK_ML[name] || 200)));
+    } else {
+      packs = Math.max(1, Math.ceil(amount / (PACK_N[name] || 1)));
+    }
+    return Math.round(packs * base * f);
+  }
+
+  /* ---- 描画 ---- */
+  function renderAll() {
+    const settings = getSettings();
+    const week = getWeek();
+    const shopDays = settings.shopDays || [];
+
+    // アクションバー表示制御
+    const bar = document.getElementById('shopActionBar');
+    const noBanner = document.getElementById('shopNoBanner');
+
+    if (!shopDays.length || !week) {
+      if (bar) bar.style.display = 'none';
+      if (noBanner) noBanner.style.display = !week ? 'flex' : 'none';
+      document.getElementById('shopBudgetCard').style.display = 'none';
+      document.getElementById('shopDayTabs').innerHTML = '';
+      document.getElementById('shopListContent').innerHTML =
+        `<div class="empty-state">
+          <div class="empty-state__icon">🛒</div>
+          <div class="empty-state__text">${!shopDays.length
+            ? '設定タブで買い物曜日を\n選択してください'
+            : '献立タブで今週の献立を\n生成してください'}</div>
+        </div>`;
+      return;
+    }
+    if (noBanner) noBanner.style.display = 'none';
+    if (bar) bar.style.display = 'flex';
+
+    buildList();
+    renderBudgetCard();
+    renderDayTabs();
+    renderList(activeShopDay);
+  }
+
+  function renderDayTabs() {
+    const el = document.getElementById('shopDayTabs');
+    if (!el || !cachedList) return;
+    const { wis, weekDates } = cachedList;
+    const DAY = ['日','月','火','水','木','金','土'];
+    el.innerHTML = wis.map((wi, i) => {
+      const d = weekDates[wi];
+      const dn = DAY[d.getDay()];
+      const cnt = (cachedList.byDay[i]||[]).length;
+      return `<button class="day-tab ${i===activeShopDay?'active':''}" onclick="Shop.setDay(${i})">
+        ${dn}曜<span style="display:block;font-size:.65rem;">${formatDate(d)}</span>
+        <span style="font-size:.6rem;opacity:.8;">${cnt}品</span>
+      </button>`;
+    }).join('');
+  }
+
+  function renderList(dayIdx) {
+    const el = document.getElementById('shopListContent');
+    if (!el || !cachedList) return;
+    const settings   = getSettings();
+    const supermarket = settings.supermarket || '';
+    const items = cachedList.byDay[dayIdx] || [];
+
+    if (!items.length) {
+      el.innerHTML = '<div class="card"><p class="text-sm text-muted" style="padding:8px 0;">この日の買い物品目はありません</p></div>';
+      return;
+    }
+
+    let subtotal = 0;
+    const rows = items.map(item => {
+      const key     = `${item.name}__${dayIdx}`;
+      const checked = !!checkState[key];
+      const price   = calcPrice(item.name, item.amount, item.unit, supermarket);
+      if (!checked) subtotal += price;
+
+      const amtStr = typeof item.amount === 'number' && item.amount > 0
+        ? `${Number.isInteger(item.amount) ? item.amount : item.amount.toFixed(1)}${item.unit}`
+        : item.unit || '';
+
+      const freshnessIcon = item.freshness === 'high'
+        ? '<span title="鮮度高め・早めに購入" style="color:var(--accent-light);font-size:.75rem;">★</span>'
+        : '<span title="常温保存可" style="color:var(--text-muted);font-size:.7rem;">○</span>';
+
+      return `<div class="shop-item ${checked?'checked':''}" id="si_${key.replace(/[^a-zA-Z0-9]/g,'_')}">
+        <div class="shop-check ${checked?'checked':''}" onclick="Shop.toggle('${key}')"></div>
+        <div class="shop-item__name">${item.name} ${freshnessIcon}</div>
+        <div class="shop-item__amount">${amtStr}</div>
+        ${price ? `<div class="shop-item__price">¥${price.toLocaleString()}</div>` : '<div class="shop-item__price text-muted">—</div>'}
+      </div>`;
+    }).join('');
+
+    const checkedCnt = items.filter(it => !!checkState[`${it.name}__${dayIdx}`]).length;
+    const progress   = items.length ? Math.round(checkedCnt / items.length * 100) : 0;
+
+    el.innerHTML = `
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <span class="text-sm text-muted">${checkedCnt}/${items.length} 品 完了</span>
+          <span class="text-xs" style="color:${progress===100?'var(--success)':'var(--text-muted)'};">
+            ${progress===100?'✓ 完了！':progress+'%'}
+          </span>
+        </div>
+        <div class="budget-bar" style="margin-bottom:12px;">
+          <div class="budget-bar__fill" style="width:${progress}%;background:${progress===100?'var(--success)':'linear-gradient(90deg,var(--accent-light),var(--accent))'}"></div>
+        </div>
+        ${rows}
+        <div class="divider"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
+          <span class="text-sm text-muted">未購入の小計</span>
+          <span style="font-size:1.05rem;font-weight:700;color:var(--accent);">¥${subtotal.toLocaleString()}</span>
+        </div>
+      </div>
+      <div class="banner" style="margin-top:4px;">
+        <div class="banner__icon">★</div>
+        <div class="banner__body">
+          <div class="banner__title" style="font-size:.78rem;">★=鮮度高め / ○=常温保存可</div>
+          <div class="banner__text">★は次の買い物直前に自動配置されています</div>
+        </div>
+      </div>`;
+  }
+
+  function renderBudgetCard() {
+    const el = document.getElementById('shopBudgetCard');
+    if (!el || !cachedList) return;
+    const settings   = getSettings();
+    const supermarket = settings.supermarket || '';
+    const budget     = settings.weekBudget || 0;
+
+    let total = 0;
+    Object.values(cachedList.byDay).forEach(items => {
+      items.forEach(it => { total += calcPrice(it.name, it.amount, it.unit, supermarket); });
+    });
+
+    const pct  = budget ? Math.min(Math.round(total / budget * 100), 120) : 0;
+    const over = budget && total > budget;
+    const superLabel = SUPER_NAME[supermarket] || '';
+
+    el.style.display = 'block';
+    el.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <div>
+          <div class="text-xs text-muted" style="margin-bottom:2px;">今週の買い物合計（推計）</div>
+          <div class="amount-badge">
+            <span class="amount-badge__num">¥${total.toLocaleString()}</span>
+            ${budget ? `<span class="amount-badge__unit">/ ¥${budget.toLocaleString()}</span>` : ''}
+          </div>
+        </div>
+        ${superLabel ? `<span class="tag" style="background:var(--bg-muted);color:var(--text-secondary);margin-top:4px;">${superLabel} PB価格</span>` : ''}
+      </div>
+      ${budget ? `
+        <div class="budget-bar">
+          <div class="budget-bar__fill ${over?'over':''}" style="width:${pct}%"></div>
+        </div>
+        <div class="text-xs" style="text-align:right;margin-top:4px;color:${over?'#C0392B':'var(--success)'};">
+          ${over ? '⚠️ 予算オーバー' : '✓ 予算内'}&nbsp;(${pct}%)
+        </div>` : ''}
+    `;
+  }
+
+  /* ---- イベント ---- */
+  function toggle(key) {
+    checkState[key] = !checkState[key];
+    Store.set('meguri_check_state', checkState);
+    renderList(activeShopDay);
+    renderBudgetCard();
+  }
+
+  function setDay(idx) {
+    activeShopDay = idx;
+    renderDayTabs();
+    renderList(idx);
+  }
+
+  function clearChecks() {
+    checkState = {};
+    Store.set('meguri_check_state', checkState);
+    renderList(activeShopDay);
+    showToast('チェックをリセットしました');
+  }
+
+  /* ---- 外部参照用：週計金額を返す ---- */
+  function getTotalPrice() {
+    if (!cachedList) buildList();
+    const settings = getSettings();
+    const sup = settings.supermarket || '';
+    let total = 0;
+    Object.values(cachedList?.byDay || {}).forEach(items =>
+      items.forEach(it => { total += calcPrice(it.name, it.amount, it.unit, sup); })
+    );
+    return total;
+  }
+
+  function init() {
+    checkState  = Store.get('meguri_check_state', {});
+    activeShopDay = 0;
+    renderAll();
+  }
+
+  return { init, setDay, toggle, clearChecks, getTotalPrice, renderAll };
+})();
+
+Shop.init();
+
+
+/* ===========================
+   SUMMARY MODULE — まとめ
+   =========================== */
+const Summary = (() => {
+
+  const CAT_LABEL = { meat:'肉', fish:'魚', veg:'野菜' };
+  const CAT_CLS   = { meat:'tag-meat', fish:'tag-fish', veg:'tag-veg' };
+  const DAY_JA    = ['日','月','火','水','木','金','土'];
+
+  function getWeek()     { return Menu.getCurrentWeek(); }
+  function getSettings() { return Settings.getSettings(); }
+
+  /* ---- メイン描画 ---- */
+  function renderAll() {
+    renderHeader();
+    renderBudget();
+    renderCalendar();
+    renderSeasonings();
+  }
+
+  /* ---- 週ヘッダー ---- */
+  function renderHeader() {
+    const week     = getWeek();
+    const labelEl  = document.getElementById('summaryWeekLabel');
+    const statsEl  = document.getElementById('summaryCatStats');
+    const weekDates = week ? week.days.map(d => new Date(d.date)) : getWeekDates();
+
+    if (labelEl) {
+      labelEl.textContent = `${formatDate(weekDates[0])}（月）〜 ${formatDate(weekDates[6])}（日）`;
+    }
+
+    if (statsEl) {
+      if (!week) { statsEl.innerHTML = ''; return; }
+      const counts = { meat:0, fish:0, veg:0 };
+      week.days.forEach(d => { if (counts[d.category] !== undefined) counts[d.category]++; });
+      statsEl.innerHTML = Object.entries(counts).map(([cat, n]) =>
+        `<div style="text-align:center;">
+          <div class="tag ${CAT_CLS[cat]}" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;font-size:.75rem;font-weight:700;">${n}</div>
+          <div style="font-size:.6rem;color:var(--text-muted);margin-top:2px;">${CAT_LABEL[cat]}</div>
+        </div>`
+      ).join('');
+    }
+  }
+
+  /* ---- 予算実績 ---- */
+  function renderBudget() {
+    const el       = document.getElementById('summaryBudget');
+    const card     = document.getElementById('summaryBudgetCard');
+    if (!el) return;
+    const settings = getSettings();
+    const budget   = settings.weekBudget || 0;
+    const total    = Shop.getTotalPrice();
+    const superLabel = ({ life:'ライフ', aeon:'イオン', seiyu:'西友', coop:'コープ',
+      gyomu:'業務スーパー', ito:'イトーヨーカドー', kansai:'関西スーパー',
+      bandai:'万代', maruhachi:'マルハチ' })[settings.supermarket] || '';
+
+    if (!budget && !total) {
+      el.innerHTML = `<p class="text-sm text-muted">設定タブで予算を入力すると<br>ここに実績が表示されます</p>`;
+      return;
+    }
+
+    const pct    = budget ? Math.min(Math.round(total / budget * 100), 150) : 0;
+    const over   = budget && total > budget;
+    const remain = budget - total;
+
+    el.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px;">
+        <div>
+          <div class="text-xs text-muted">推計合計${superLabel ? '（'+superLabel+' PB）' : ''}</div>
+          <div class="amount-badge" style="margin-top:2px;">
+            <span class="amount-badge__num" style="${over?'color:#C0392B':''}">¥${total.toLocaleString()}</span>
+          </div>
+        </div>
+        ${budget ? `<div style="text-align:right;">
+          <div class="text-xs text-muted">週合計予算</div>
+          <div style="font-size:1rem;font-weight:600;color:var(--text-secondary);">¥${budget.toLocaleString()}</div>
+        </div>` : ''}
+      </div>
+      ${budget ? `
+        <div class="budget-bar">
+          <div class="budget-bar__fill ${over?'over':''}" style="width:${Math.min(pct,100)}%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+          <span class="text-sm" style="font-weight:500;color:${over?'#C0392B':'var(--success)'};">
+            ${over
+              ? `⚠️ ¥${Math.abs(remain).toLocaleString()} オーバー`
+              : `✓ 残り ¥${remain.toLocaleString()}`}
+          </span>
+          <span class="text-xs text-muted">${pct}%使用</span>
+        </div>` : ''}`;
+  }
+
+  /* ---- 献立カレンダー ---- */
+  function renderCalendar() {
+    const el = document.getElementById('summaryCalendar');
+    if (!el) return;
+    const week     = getWeek();
+    const settings = getSettings();
+    const weekDates = week ? week.days.map(d => new Date(d.date)) : getWeekDates();
+
+    if (!week) {
+      el.innerHTML = `<div class="empty-state" style="padding:24px;">
+        <div class="empty-state__icon" style="font-size:2rem;">🍽️</div>
+        <div class="empty-state__text">献立タブで今週の献立を<br>生成してください</div>
+      </div>`;
+      return;
+    }
+
+    el.innerHTML = week.days.map((day, i) => {
+      const date    = new Date(day.date);
+      const dayName = DAY_JA[date.getDay()];
+      const cat     = day.category;
+
+      // 朝食テキスト
+      const bStyle = settings.breakfastStyle || 'japanese';
+      const bText  = bStyle === 'none' ? 'なし'
+        : (bStyle === 'japanese' || (bStyle === 'mixed' && date.getDate() % 2 === 0))
+          ? 'ごはん・みそ汁・たまご・納豆'
+          : '食パン・たまご・牛乳・ヨーグルト';
+
+      // 夕食テキスト
+      const mainDish = (!day.eatingOutType && day.dinner?.main)
+        ? DISH_MASTER.find(d => d.id === day.dinner.main) : null;
+      const sides = (!day.eatingOutType ? (day.dinner?.sides || []) : [])
+        .map(sid => DISH_MASTER.find(d => d.id === sid)).filter(Boolean);
+      const dinnerText = day.eatingOutType === 'eatingOut' ? '🍽️ 外食の日'
+        : day.eatingOutType === 'busy' ? '📅 予定ありの日'
+        : mainDish ? [mainDish.name, ...sides.map(s => s.name)].join('　＋　')
+        : '未選択';
+      const dinnerColor = day.eatingOutType ? 'var(--text-muted)'
+        : mainDish ? 'var(--text-primary)' : 'var(--text-muted)';
+
+      return `<div style="border:1.5px solid var(--border-light);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:8px;">
+        <!-- 曜日ヘッダー -->
+        <div style="background:var(--bg-muted);padding:7px 12px;display:flex;align-items:center;gap:8px;">
+          <span style="font-family:'Shippori Mincho',serif;font-weight:700;font-size:.95rem;color:var(--text-primary);">${dayName}曜</span>
+          <span style="font-size:.78rem;color:var(--text-muted);">${formatDate(date)}</span>
+          ${day.eatingOutType
+            ? `<span class="tag" style="margin-left:auto;background:var(--bg-muted);color:var(--text-muted);">${day.eatingOutType === 'eatingOut' ? '外食' : '予定あり'}</span>`
+            : `<span class="tag ${CAT_CLS[cat]}" style="margin-left:auto;">${CAT_LABEL[cat]}</span>`}
+        </div>
+        <!-- 食事行 -->
+        <div style="padding:0 12px;">
+          ${mealRow('朝', bText, 'var(--text-secondary)', settings.breakfastStyle !== 'none', true)}
+          ${mealRow('昼', '各自・外食など', 'var(--text-muted)', false, false)}
+          ${mealRow('夕', dinnerText, dinnerColor, !!mainDish, false)}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function mealRow(label, text, color, accent, hasBorder) {
+    const labelColor = accent ? 'var(--accent)' : 'var(--text-muted)';
+    return `<div style="display:flex;gap:10px;align-items:flex-start;padding:7px 0;${hasBorder?'':'border-top:1px solid var(--border-light)'};">
+      <span style="font-size:.72rem;font-weight:700;color:${labelColor};width:16px;flex-shrink:0;padding-top:2px;">${label}</span>
+      <span style="font-size:.83rem;color:${color};line-height:1.5;">${text}</span>
+    </div>`;
+  }
+
+  /* ---- 使用調味料 ---- */
+  function renderSeasonings() {
+    const el   = document.getElementById('summarySeasonings');
+    if (!el) return;
+    const week = getWeek();
+
+    if (!week) {
+      el.innerHTML = '<p class="text-sm text-muted">献立生成後に表示されます</p>';
+      return;
+    }
+
+    const all = new Set();
+    week.days.forEach(day => {
+      [day.dinner?.main, ...(day.dinner?.sides || [])].filter(Boolean).forEach(id => {
+        DISH_MASTER.find(d => d.id === id)?.seasonings?.forEach(s => all.add(s));
+      });
+    });
+
+    if (!all.size) {
+      el.innerHTML = '<p class="text-sm text-muted">調味料情報がありません</p>';
+      return;
+    }
+
+    // 基本調味料とその他に分類
+    const basics  = ['醤油','みそ','みりん','酒','砂糖','塩','こしょう','だし'];
+    const primary = [...all].filter(s => basics.includes(s));
+    const extra   = [...all].filter(s => !basics.includes(s));
+
+    el.innerHTML = `
+      ${primary.length ? `
+        <div class="text-xs text-muted" style="margin-bottom:6px;font-weight:600;">基本調味料</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+          ${primary.map(s => seasoningChip(s, true)).join('')}
+        </div>` : ''}
+      ${extra.length ? `
+        <div class="text-xs text-muted" style="margin-bottom:6px;font-weight:600;">その他の調味料・調理材料</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+          ${extra.map(s => seasoningChip(s, false)).join('')}
+        </div>` : ''}
+      <p class="text-xs text-muted" style="border-top:1px solid var(--border-light);padding-top:8px;margin-top:4px;">
+        ※ 調味料は買い物リストに含まれていません。在庫をご確認ください。
+      </p>`;
+  }
+
+  function seasoningChip(name, isBasic) {
+    return `<span style="display:inline-flex;align-items:center;padding:5px 12px;
+      background:${isBasic ? '#FEF9E7' : 'var(--bg-muted)'};
+      color:${isBasic ? '#B7950B' : 'var(--text-secondary)'};
+      border:1px solid ${isBasic ? '#F9E79F' : 'var(--border)'};
+      border-radius:20px;font-size:.8rem;">${name}</span>`;
+  }
+
+  function init() { renderAll(); }
+
+  return { init, renderAll };
+})();
+
+Summary.init();
+</script>
+</body>
+</html>
