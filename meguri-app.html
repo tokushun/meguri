@@ -879,52 +879,6 @@ h1, h2 { font-family: 'Shippori Mincho', serif; }
       </div>
 
       <!-- 朝食スタイル -->
-      <div class="card">
-        <div class="card__title">朝食スタイル</div>
-        <div class="radio-group" id="breakfastStyleGroup">
-          <label class="radio-option checked" data-val="japanese">
-            <input type="radio" name="breakfastStyle" value="japanese" checked>
-            <span class="radio-dot"></span>
-            <span>
-              <div class="radio-option__text">和食</div>
-              <div class="radio-option__desc">ごはん・みそ汁・たまご・納豆</div>
-            </span>
-          </label>
-          <label class="radio-option" data-val="western">
-            <input type="radio" name="breakfastStyle" value="western">
-            <span class="radio-dot"></span>
-            <span>
-              <div class="radio-option__text">洋食</div>
-              <div class="radio-option__desc">食パン・たまご・牛乳・ヨーグルト</div>
-            </span>
-          </label>
-          <label class="radio-option" data-val="mixed">
-            <input type="radio" name="breakfastStyle" value="mixed">
-            <span class="radio-dot"></span>
-            <span>
-              <div class="radio-option__text">混合</div>
-              <div class="radio-option__desc">偶数日＝和食、奇数日＝洋食</div>
-            </span>
-          </label>
-          <label class="radio-option" data-val="none">
-            <input type="radio" name="breakfastStyle" value="none">
-            <span class="radio-dot"></span>
-            <span>
-              <div class="radio-option__text">なし</div>
-              <div class="radio-option__desc">朝食は買い物リストに含めない</div>
-            </span>
-          </label>
-        </div>
-        <div class="divider"></div>
-        <div class="toggle-wrap">
-          <span class="toggle-label">朝食食材を買い物リストに含める</span>
-          <label class="toggle">
-            <input type="checkbox" id="breakfastInShop" checked>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-      </div>
-
       <!-- 晩ごはん構成 -->
       <div class="card">
         <div class="card__title">晩ごはん構成</div>
@@ -1467,8 +1421,6 @@ const Settings = (() => {
   // ---- state ----
   let members  = Store.get('meguri_family', []);
   let settings = Store.get('meguri_settings', {
-    breakfastStyle: 'japanese',
-    breakfastInShop: true,
     dinnerStruct: 'main1',
     shopDays: [],
     supermarket: '',
@@ -1605,9 +1557,6 @@ const Settings = (() => {
       });
     });
 
-    // トグル
-    document.getElementById('breakfastInShop')?.addEventListener('change', saveSettings);
-
     // 予算
     document.getElementById('weekBudget')?.addEventListener('change', saveSettings);
 
@@ -1617,11 +1566,7 @@ const Settings = (() => {
 
   function loadSavedSettings() {
     const s = settings;
-    setRadio('breakfastStyleGroup', s.breakfastStyle || 'japanese');
     setRadio('dinnerStructGroup', s.dinnerStruct || 'main1');
-
-    const tog = document.getElementById('breakfastInShop');
-    if (tog) tog.checked = s.breakfastInShop !== false;
 
     const budget = document.getElementById('weekBudget');
     if (budget && s.weekBudget) budget.value = s.weekBudget;
@@ -1641,8 +1586,6 @@ const Settings = (() => {
   }
 
   function saveSettings() {
-    settings.breakfastStyle = document.querySelector('#breakfastStyleGroup .radio-option.checked')?.dataset.val || 'japanese';
-    settings.breakfastInShop = document.getElementById('breakfastInShop')?.checked ?? true;
     settings.dinnerStruct = document.querySelector('#dinnerStructGroup .radio-option.checked')?.dataset.val || 'main1';
     // shopDays は settings オブジェクトで直接管理するためここでは上書きしない
     settings.supermarket = document.querySelector('#supermarketGroup .checkbox-chip.checked')?.dataset.val || '';
@@ -2328,16 +2271,7 @@ const Menu = (() => {
   }
 
   function renderBreakfastCard(date, settings) {
-    const style = settings.breakfastStyle || 'japanese';
-    if (style === 'none') return '';
-    const d = date.getDate();
-    const items = (style==='japanese' || (style==='mixed' && d%2===0))
-      ? ['ごはん','みそ汁','たまご料理','納豆']
-      : ['食パン','たまご料理','牛乳','ヨーグルト'];
-    return `<div class="card"><div class="card__title">朝食</div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;">
-        ${items.map(i=>`<span class="tag" style="background:var(--bg-muted);color:var(--text-secondary);">${i}</span>`).join('')}
-      </div></div>`;
+    return '';
   }
 
   function renderDinnerCard(day, dayIdx, settings) {
@@ -2611,31 +2545,6 @@ const Shop = (() => {
     return best;
   }
 
-  /* ---- 朝食食材 ---- */
-  function breakfastItems(style) {
-    const jp = [
-      { name:'米',     amount:1,    unit:'袋',  freshness:'low'  },
-      { name:'みそ',   amount:1,    unit:'袋',  freshness:'low'  },
-      { name:'だし',   amount:1,    unit:'袋',  freshness:'low'  },
-      { name:'たまご', amount:10,   unit:'個',  freshness:'high' }, // 10個パック、個単位で夕食分とマージ
-      { name:'納豆',   amount:3,    unit:'パック', freshness:'high' },
-    ];
-    const wt = [
-      { name:'食パン',   amount:1,    unit:'斤',  freshness:'high' },
-      { name:'たまご',   amount:10,   unit:'個',  freshness:'high' }, // 同上
-      { name:'牛乳',     amount:1000, unit:'ml',  freshness:'high' }, // 1000ml=1L、ml単位で夕食分とマージ
-      { name:'ヨーグルト', amount:1, unit:'個',  freshness:'high' },
-    ];
-    if (style === 'japanese') return jp;
-    if (style === 'western')  return wt;
-    if (style === 'mixed') {
-      const all = [...jp];
-      wt.forEach(w => { if (!all.find(j=>j.name===w.name)) all.push(w); });
-      return all;
-    }
-    return [];
-  }
-
   /* ---- 献立から食材リストを構築 ---- */
   function buildList() {
     const settings = getSettings();
@@ -2659,12 +2568,6 @@ const Shop = (() => {
           dish.ingredients.forEach(ing => raw.push({ ...ing, dishWI: i }));
         });
       });
-    }
-
-    // 朝食食材
-    if (settings.breakfastInShop !== false && settings.breakfastStyle !== 'none') {
-      breakfastItems(settings.breakfastStyle || 'japanese')
-        .forEach(ing => raw.push({ ...ing, dishWI: 0 }));
     }
 
     // 同名食材をマージ
@@ -2920,33 +2823,18 @@ const Summary = (() => {
   const CAT_CLS   = { meat:'tag-meat', fish:'tag-fish', veg:'tag-veg' };
   const DAY_JA    = ['日','月','火','水','木','金','土'];
 
-  // 朝食スタイル別の1日あたり栄養推定値
-  const BREAKFAST_NUT = {
-    japanese: { calories:480, protein:22, fat:14, carbs:66, vitamins:6, minerals:7 },
-    western:  { calories:600, protein:29, fat:23, carbs:71, vitamins:5, minerals:7 },
-    mixed:    { calories:540, protein:26, fat:19, carbs:69, vitamins:6, minerals:7 },
-    none:     { calories:0,   protein:0,  fat:0,  carbs:0,  vitamins:0, minerals:0 },
-  };
-
   // 夕食の白米（1人前 150g）
   const DINNER_RICE = { calories:252, protein:4, fat:1, carbs:56 };
 
-  // 1日の朝食+夕食(白米込み)の栄養を返すヘルパー
+  // 1日の夕食（白米込み）の栄養を返すヘルパー
   // ビタミン・ミネラルは「その日の最高スコア」を採用（量で積み上げできない指標）
-  function calcDayNutrition(day, bNut) {
+  function calcDayNutrition(day) {
     const r = { calories:0, protein:0, fat:0, carbs:0, vitamins:0, minerals:0 };
-    // 朝食kcal/PFC
-    if (bNut) ['calories','protein','fat','carbs'].forEach(k => { r[k] += bNut[k]; });
-    const baseVit = bNut ? bNut.vitamins : 0;
-    const baseMin = bNut ? bNut.minerals : 0;
-
     if (!day.eatingOutType) {
-      // 夕食白米
       r.calories += DINNER_RICE.calories;
       r.protein  += DINNER_RICE.protein;
       r.fat      += DINNER_RICE.fat;
       r.carbs    += DINNER_RICE.carbs;
-      // 夕食おかず
       let dayVit = 0, dayMin = 0;
       [day.dinner?.main, ...(day.dinner?.sides||[])].filter(Boolean).forEach(id => {
         const dish = DISH_MASTER.find(d => d.id === id);
@@ -2956,12 +2844,8 @@ const Summary = (() => {
           dayMin = Math.max(dayMin, dish.nutrition.minerals);
         }
       });
-      // ビタミン・ミネラルは朝食と夕食の高い方を採用
-      r.vitamins = Math.max(baseVit, dayVit);
-      r.minerals = Math.max(baseMin, dayMin);
-    } else {
-      r.vitamins = baseVit;
-      r.minerals = baseMin;
+      r.vitamins = dayVit;
+      r.minerals = dayMin;
     }
     return r;
   }
@@ -3071,19 +2955,6 @@ const Summary = (() => {
       const dayName = DAY_JA[date.getDay()];
       const cat     = day.category;
 
-      // 朝食テキスト
-      const calBStyle = settings.breakfastStyle || 'japanese';
-      const calBNut   = BREAKFAST_NUT[calBStyle] || BREAKFAST_NUT.none;
-      // 混合朝食は日付の偶奇で切り替え
-      const dayBNut = calBStyle === 'none' ? null
-        : calBStyle === 'mixed'
-          ? (date.getDate() % 2 === 0 ? BREAKFAST_NUT.japanese : BREAKFAST_NUT.western)
-          : calBNut;
-      const bText = calBStyle === 'none' ? 'なし'
-        : (calBStyle === 'japanese' || (calBStyle === 'mixed' && date.getDate() % 2 === 0))
-          ? 'ごはん・みそ汁・たまご・納豆'
-          : '食パン・たまご・牛乳・ヨーグルト';
-
       // 夕食テキスト
       const mainDish = (!day.eatingOutType && day.dinner?.main)
         ? DISH_MASTER.find(d => d.id === day.dinner.main) : null;
@@ -3096,14 +2967,9 @@ const Summary = (() => {
       const dinnerColor = day.eatingOutType ? 'var(--text-muted)'
         : mainDish ? 'var(--text-primary)' : 'var(--text-muted)';
 
-      // 1日の栄養合計（朝食＋夕食）
-      const dayNut = calcDayNutrition(day, dayBNut);
-      const D_DAY_TGT = {
-        calories: 700 + (dayBNut?.calories || 0),
-        protein:  22  + (dayBNut?.protein  || 0),
-        fat:      20  + (dayBNut?.fat      || 0),
-        carbs:    70  + (dayBNut?.carbs    || 0),
-      };
+      // 1日の栄養合計（夕食：おかず＋白米）
+      const dayNut = calcDayNutrition(day);
+      const D_DAY_TGT = { calories:700, protein:22, fat:20, carbs:70 };
       const hasDayData = dayNut.calories > 0;
       const nutBarHtml = hasDayData ? (() => {
         const calPct  = Math.min(Math.round(dayNut.calories / D_DAY_TGT.calories * 100), 100);
@@ -3120,7 +2986,7 @@ const Summary = (() => {
         };
         return `<div style="padding:8px 12px;background:var(--bg-muted);border-top:1px solid var(--border-light);">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-            <span style="font-size:.62rem;color:var(--text-secondary);font-weight:600;">朝食＋夕食の栄養</span>
+            <span style="font-size:.62rem;color:var(--text-secondary);font-weight:600;">夕食の栄養（白米込み）</span>
             <span style="font-size:.62rem;color:${calColor};font-weight:600;">${Math.round(dayNut.calories)} kcal（目標${D_DAY_TGT.calories}）</span>
           </div>
           <div style="background:var(--border-light);border-radius:4px;height:7px;overflow:hidden;margin-bottom:6px;position:relative;">
@@ -3146,8 +3012,7 @@ const Summary = (() => {
         </div>
         <!-- 食事行 -->
         <div style="padding:0 12px;">
-          ${mealRow('朝', bText, 'var(--text-secondary)', settings.breakfastStyle !== 'none', true)}
-          ${mealRow('昼', '各自・外食など', 'var(--text-muted)', false, false)}
+          ${mealRow('昼', '各自・外食など', 'var(--text-muted)', false, true)}
           ${mealRow('夕', dinnerText, dinnerColor, !!mainDish, false)}
         </div>
         ${nutBarHtml}
@@ -3227,20 +3092,10 @@ const Summary = (() => {
       return;
     }
 
-    // 朝食スタイル取得
-    const wkSettings = getSettings();
-    const bStyle = wkSettings.breakfastStyle || 'japanese';
-    const bNut   = BREAKFAST_NUT[bStyle] || BREAKFAST_NUT.none;
-    const bDays  = bStyle !== 'none' ? 7 : 0;
-
-    // 夕食分を集計
+    // 夕食分を集計（おかず＋白米）
     // ビタミン・ミネラルは「1日の最高スコア」方式で積み上げ（量で加算できない指標）
     const total = { calories:0, protein:0, fat:0, carbs:0, vitamins:0, minerals:0 };
     let activeDays = 0;
-
-    // 朝食のビタミン・ミネラルを全7日分の基礎として加算
-    total.vitamins += bNut.vitamins * bDays;
-    total.minerals += bNut.minerals * bDays;
 
     week.days.forEach(day => {
       if (day.eatingOutType) return;
@@ -3248,7 +3103,6 @@ const Summary = (() => {
       if (!ids.length) return;
       activeDays++;
 
-      // おかずのkcal/PFC合計、ビタミン・ミネラルは日ごと最高値
       let dayVit = 0, dayMin = 0;
       ids.forEach(id => {
         const dish = DISH_MASTER.find(d => d.id === id);
@@ -3258,15 +3112,15 @@ const Summary = (() => {
         dayMin = Math.max(dayMin, dish.nutrition.minerals);
       });
 
-      // 夕食白米を追加
+      // 夕食白米を加算
       total.calories += DINNER_RICE.calories;
       total.protein  += DINNER_RICE.protein;
       total.fat      += DINNER_RICE.fat;
       total.carbs    += DINNER_RICE.carbs;
 
-      // 夕食スコアが朝食スコアを上回る分だけ追加（朝食ベースは既に加算済み）
-      total.vitamins += Math.max(0, dayVit - bNut.vitamins);
-      total.minerals += Math.max(0, dayMin - bNut.minerals);
+      // ビタミン・ミネラルは日ごと最高値を加算
+      total.vitamins += dayVit;
+      total.minerals += dayMin;
     });
 
     if (activeDays === 0) {
@@ -3274,21 +3128,15 @@ const Summary = (() => {
       return;
     }
 
-    // 朝食kcal/PFCを7日分加算
-    total.calories += bNut.calories * bDays;
-    total.protein  += bNut.protein  * bDays;
-    total.fat      += bNut.fat      * bDays;
-    total.carbs    += bNut.carbs    * bDays;
-
-    // 1日平均（7日で割る）
+    // 1日平均（自炊日数で割る）
     const avg = {};
     ['calories','protein','fat','carbs','vitamins','minerals'].forEach(k => {
-      avg[k] = Math.round(total[k] / 7 * 10) / 10;
+      avg[k] = Math.round(total[k] / activeDays * 10) / 10;
     });
 
-    // 茶碗換算（整数）
-    const bowlsPerDay  = Math.round(avg.calories / RICE_BOWL_KCAL);
-    const bowlsPerWeek = Math.round(total.calories / RICE_BOWL_KCAL);
+    // 白米の実杯数（夕食1食につき1杯）
+    const bowlsPerDay  = 1;
+    const bowlsPerWeek = activeDays;
 
     // PFCカロリー比（週合計ベース）
     const pfcTotal = total.protein * 4 + total.fat * 9 + total.carbs * 4;
@@ -3299,16 +3147,15 @@ const Summary = (() => {
     const pfcFOk = pfcF >= 20 && pfcF <= 30;
     const pfcCOk = pfcC >= 50 && pfcC <= 65;
 
-    // 週合計目標 = 夕食目標 × 自炊日数 ＋ 朝食目標 × 7日
-    // ビタミン・ミネラルは「1日7点」× 7日 = 49点が週の目標
+    // 週合計目標（夕食のみ）
     const D_DINNER = { calories:700, protein:22, fat:20, carbs:70 };
     const W_TARGET = {
-      calories: D_DINNER.calories * activeDays + bNut.calories * bDays,
-      protein:  D_DINNER.protein  * activeDays + bNut.protein  * bDays,
-      fat:      D_DINNER.fat      * activeDays + bNut.fat      * bDays,
-      carbs:    D_DINNER.carbs    * activeDays + bNut.carbs    * bDays,
-      vitamins: 7 * Math.max(activeDays, bDays),
-      minerals: 7 * Math.max(activeDays, bDays),
+      calories: D_DINNER.calories * activeDays,
+      protein:  D_DINNER.protein  * activeDays,
+      fat:      D_DINNER.fat      * activeDays,
+      carbs:    D_DINNER.carbs    * activeDays,
+      vitamins: 7 * activeDays,
+      minerals: 7 * activeDays,
     };
     const LABELS = { calories:'カロリー', protein:'タンパク質', fat:'脂質', carbs:'炭水化物', vitamins:'ビタミン', minerals:'ミネラル' };
     const UNITS  = { calories:'kcal', protein:'g', fat:'g', carbs:'g', vitamins:'点', minerals:'点' };
@@ -3326,7 +3173,7 @@ const Summary = (() => {
       const bg    = short ? '#FDEDEC' : over ? '#FEF9E7' : '#E9F7EF';
       const badge = short ? '▼ 不足' : over ? '▲ 過剰' : '✓ 適切';
       const riceRef = k === 'calories'
-        ? `<span style="font-size:.65rem;color:var(--text-muted);font-weight:400;margin-left:6px;">🍚 茶碗${bowlsPerWeek}杯分</span>`
+        ? `<span style="font-size:.65rem;color:var(--text-muted);font-weight:400;margin-left:6px;">（白米${activeDays}杯込み）</span>`
         : '';
       return `<div style="margin-bottom:14px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
@@ -3352,7 +3199,7 @@ const Summary = (() => {
       <div style="background:linear-gradient(135deg,#FFF3EB,#FDE8D8);border:1.5px solid var(--accent-light);border-radius:12px;padding:14px 16px;margin-bottom:16px;">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
           <div>
-            <div style="font-size:.68rem;color:var(--text-secondary);font-weight:600;letter-spacing:.04em;margin-bottom:4px;">1日平均カロリー（朝食＋夕食）</div>
+            <div style="font-size:.68rem;color:var(--text-secondary);font-weight:600;letter-spacing:.04em;margin-bottom:4px;">1日平均カロリー（夕食・白米込み）</div>
             <div style="display:flex;align-items:baseline;gap:4px;">
               <span style="font-size:2rem;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1;">${Math.round(avg.calories)}</span>
               <span style="font-size:.82rem;color:var(--text-secondary);">kcal</span>
@@ -3362,11 +3209,11 @@ const Summary = (() => {
           <div style="text-align:center;background:rgba(255,255,255,.65);border-radius:10px;padding:10px 14px;flex-shrink:0;">
             <div style="font-size:1.6rem;line-height:1;margin-bottom:4px;">🍚</div>
             <div style="font-size:1.4rem;font-weight:700;color:var(--accent-dark);line-height:1;">${bowlsPerDay}</div>
-            <div style="font-size:.62rem;color:var(--text-secondary);margin-top:2px;">杯 / 日</div>
-            <div style="font-size:.6rem;color:var(--text-muted);margin-top:4px;border-top:1px solid rgba(0,0,0,.08);padding-top:4px;">週 ${bowlsPerWeek}杯</div>
+            <div style="font-size:.62rem;color:var(--text-secondary);margin-top:2px;">杯 / 食</div>
+            <div style="font-size:.6rem;color:var(--text-muted);margin-top:4px;border-top:1px solid rgba(0,0,0,.08);padding-top:4px;">週計 ${bowlsPerWeek}杯</div>
           </div>
         </div>
-        <div style="margin-top:10px;font-size:.65rem;color:var(--text-muted);">茶碗一杯 ＝ 約252kcal（ご飯150g）を基準としています</div>
+        <div style="margin-top:10px;font-size:.65rem;color:var(--text-muted);">夕食1食につき白米1杯（150g・252kcal）を計上しています</div>
       </div>
 
       <!-- PFCバランス（週合計） -->
@@ -3405,7 +3252,7 @@ const Summary = (() => {
       <!-- 栄養素別バー（週合計） -->
       <div style="font-size:.72rem;font-weight:600;color:var(--text-secondary);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
         <span>週合計</span>
-        <span style="font-size:.65rem;font-weight:400;color:var(--text-muted);">（朝食＋夕食 / 朝食${bDays}日・夕食${activeDays}日）</span>
+        <span style="font-size:.65rem;font-weight:400;color:var(--text-muted);">（夕食おかず＋白米 / ${activeDays}日分）</span>
       </div>
       ${nutRows}
 
@@ -3475,8 +3322,7 @@ const Summary = (() => {
       })()}
 
       <p class="text-xs text-muted" style="border-top:1px solid var(--border-light);padding-top:8px;line-height:1.6;">
-        ※ 朝食（${bStyle==='japanese'?'和食':bStyle==='western'?'洋食':bStyle==='mixed'?'混合':'なし'}）＋夕食（おかず＋白米252kcal）の推定値。<br>
-        ※ 朝食：${bNut.calories}kcal・炭水化物${bNut.carbs}g / 夕食白米：252kcal・炭水化物56g を毎日加算しています。<br>
+        ※ 夕食（おかず＋白米150g=252kcal）の1人前推定値。目標値は1日2000kcal想定の夕食分（約35%）を基準としています。<br>
         ※ ビタミン・ミネラルは1日の最高スコアで評価（複数品の単純合算ではありません）。
       </p>`;
   }
