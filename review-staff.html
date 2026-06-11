@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>オーナー返信ジェネレーター【スタッフ専用】｜とくなが接骨院</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP',sans-serif;background:#f3f6fa;color:#1a1a1a;line-height:1.7;min-height:100vh}
+.hero{background:linear-gradient(135deg,#2d4a7a 0%,#4a7cb5 100%);padding:28px 16px 24px;text-align:center;color:#fff}
+.hero h1{font-size:19px;font-weight:700;margin-bottom:5px}
+.hero p{font-size:12px;opacity:.85}
+.staff-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;margin-bottom:12px}
+.wrap{max-width:640px;margin:0 auto;padding:20px 14px 60px}
+.card{background:#fff;border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.lb{font-size:14px;color:#444;font-weight:700;margin-bottom:10px}
+.hint{font-size:12px;color:#999;margin-bottom:10px;line-height:1.6;background:#f8f8f8;border-radius:8px;padding:8px 12px}
+.cps{display:flex;flex-wrap:wrap;gap:8px}
+.cp{padding:8px 16px;border-radius:22px;font-size:13px;cursor:pointer;border:1.5px solid #e0e8f0;background:#fff;color:#444;transition:all .15s;user-select:none}
+.cp:hover{border-color:#4a7cb5;color:#2d4a7a}
+.cp.on{background:#ebf2fb;border-color:#4a7cb5;color:#2d4a7a;font-weight:600}
+.dv{height:1px;background:#eef2f7;margin:18px 0}
+.sl{padding:9px 14px;border-radius:10px;font-size:13px;border:1.5px solid #e0e8f0;background:#fff;color:#333;font-family:inherit;width:100%}
+.textarea-review{width:100%;padding:12px 14px;border-radius:12px;font-size:14px;border:1.5px solid #e0e8f0;font-family:inherit;line-height:1.7;color:#333;resize:vertical;min-height:120px;background:#fafcff}
+.textarea-review:focus{outline:none;border-color:#4a7cb5}
+.bg-gen{width:100%;padding:14px;border-radius:14px;font-size:15px;cursor:pointer;border:none;background:linear-gradient(135deg,#2d4a7a,#4a7cb5);color:#fff;font-family:inherit;font-weight:700;letter-spacing:.03em;box-shadow:0 4px 12px rgba(45,74,122,.3);transition:opacity .15s}
+.bg-gen:hover{opacity:.9}
+.out-wrap{display:none;margin-top:16px}
+.out-card{background:#f5f9ff;border:1.5px solid #c8dcf5;border-radius:14px;padding:16px 18px;margin-bottom:14px}
+.out-label{font-size:12px;color:#7a9cc4;margin-bottom:8px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.out-text{font-size:15px;line-height:1.85;color:#222;white-space:pre-wrap}
+.meta-row{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+.char-cnt{font-size:12px;color:#aaa}
+.kw-wrap{display:flex;gap:4px;flex-wrap:wrap}
+.kt{font-size:11px;padding:2px 8px;border-radius:10px;background:#dbeeff;color:#1a5fa8}
+.btn-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.btn-copy{flex:1;padding:12px;border-radius:12px;font-size:14px;cursor:pointer;border:none;background:#2d4a7a;color:#fff;font-family:inherit;font-weight:700;min-width:120px}
+.btn-copy:hover{background:#1e3560}
+.btn-retry{padding:12px 18px;border-radius:12px;font-size:13px;cursor:pointer;border:1.5px solid #e0e8f0;background:#fff;color:#666;font-family:inherit}
+.btn-retry:hover{background:#f0f5fa}
+.cok{font-size:13px;color:#2d8a5a;opacity:0;transition:opacity .3s;font-weight:600}
+.cok.show{opacity:1}
+.sel-row{display:flex;gap:12px;flex-wrap:wrap}
+.sel-item{flex:1;min-width:150px}
+.notice{background:#fff8e6;border:1px solid #f5d87a;border-radius:10px;padding:12px 14px;font-size:12px;color:#7a5a00;line-height:1.7;margin-bottom:14px}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="staff-tag">🔒 スタッフ専用</div>
+  <h1>オーナー返信ジェネレーター</h1>
+  <p>クチコミへのSEO最適化返信を自動生成｜とくなが接骨院</p>
+</div>
+
+<div class="wrap">
+
+  <div class="notice">💡 <strong>使い方：</strong>患者さんのクチコミ内容（症状・属性・良かった点）を選んで「返信を生成」を押してください。クチコミに入っていないキーワードを自動で返信に補完してSEO強化します。</div>
+
+  <!-- クチコミ内容入力 -->
+  <div class="card">
+    <div class="lb">📋 患者さんの症状・来院理由</div>
+    <div class="hint">クチコミに書かれた内容に合わせて選んでください（複数OK）</div>
+    <div class="cps" id="rc"></div>
+  </div>
+
+  <div class="card">
+    <div class="lb">💗 クチコミで触れていた良かった点</div>
+    <div class="cps" id="gc"></div>
+  </div>
+
+  <div class="card">
+    <div class="lb">👤 患者さんの属性</div>
+    <div class="cps" id="ac"></div>
+  </div>
+
+  <div class="card">
+    <div class="lb">📝 クチコミ本文（貼り付け任意）</div>
+    <div class="hint">貼り付けると、文中にすでにあるキーワードを自動で除外して補完します</div>
+    <textarea class="textarea-review" id="review-text" placeholder="クチコミ本文をここに貼り付けてください（省略可）"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="sel-row">
+      <div class="sel-item"><div class="lb" style="font-size:13px;margin-bottom:6px">絵文字</div><select class="sl" id="emolv"><option value="2">あり</option><option value="1">少しだけ</option><option value="0">なし</option></select></div>
+    </div>
+  </div>
+
+  <button class="bg-gen" onclick="genReply()">✨ オーナー返信を生成する</button>
+
+  <div class="out-wrap" id="out-wrap">
+    <div class="out-card">
+      <div class="out-label">↩️ オーナー返信文</div>
+      <div class="out-text" id="rp"></div>
+      <div class="meta-row">
+        <span class="char-cnt" id="pcc"></span>
+        <div class="kw-wrap" id="pk"></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-copy" onclick="cpy()">📋 コピーする</button>
+      <button class="btn-retry" onclick="genReply()">🔄 別パターン</button>
+    </div>
+    <span class="cok" id="cok" style="display:block;text-align:center;margin-top:8px">コピーしました！</span>
+  </div>
+
+</div>
+
+<script>
+function P(a){return a[Math.floor(Math.random()*a.length)]}
+function S(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+function sel(g){return[...document.querySelectorAll(`.cp[data-g="${g}"].on`)]}
+function emoLv(){return+document.getElementById('emolv').value}
+function e(pool){if(emoLv()===0)return'';return P(pool)}
+
+const R_DATA=[
+  {l:'肩の痛み',kw:'肩の痛み',cat:'upper'},{l:'首の痛み',kw:'首の痛み',cat:'upper'},
+  {l:'肩こり・首こり',kw:'肩こり',cat:'upper'},{l:'腰痛',kw:'腰痛',cat:'lower'},
+  {l:'ぎっくり腰',kw:'ぎっくり腰',cat:'lower'},{l:'膝の痛み',kw:'膝の痛み',cat:'knee'},
+  {l:'足首の痛み',kw:'足首の痛み',cat:'sport'},{l:'変形性膝関節症専門プログラム',kw:'変形性膝関節症',cat:'knee'},
+  {l:'骨盤矯正',kw:'骨盤矯正',cat:'align'},{l:'産後の骨盤矯正',kw:'産後骨盤',cat:'postpartum'},
+  {l:'顎関節症',kw:'顎関節症',cat:'other'},{l:'姿勢改善・猫背',kw:'姿勢改善',cat:'align'},
+  {l:'交通事故のケア',kw:'交通事故',cat:'accident'},{l:'むちうち',kw:'むちうち',cat:'accident'},
+  {l:'スポーツ障害・捻挫',kw:'スポーツ障害',cat:'sport'},{l:'頭痛・めまい',kw:'頭痛',cat:'upper'},
+  {l:'四十肩・五十肩',kw:'五十肩',cat:'upper'},{l:'坐骨神経痛',kw:'坐骨神経痛',cat:'lower'},
+  {l:'背中の痛み',kw:'背中の痛み',cat:'upper'},{l:'手首・腱鞘炎',kw:'腱鞘炎',cat:'other'},
+  {l:'股関節の痛み',kw:'股関節',cat:'lower'},{l:'しびれ',kw:'しびれ',cat:'other'},
+  {l:'O脚・X脚',kw:'O脚',cat:'align'},{l:'寝違え',kw:'寝違え',cat:'upper'},
+  {l:'冷え性・むくみ',kw:'冷え性',cat:'other'},
+  {l:'変形性膝関節症',kw:'変形性膝関節症',cat:'knee'},
+  {l:'変形性股関節症',kw:'変形性股関節症',cat:'lower'},
+  {l:'股関節痛',kw:'股関節痛',cat:'lower'},
+  {l:'脊柱管狭窄症',kw:'脊柱管狭窄症',cat:'lower'},
+  {l:'パーソナルトレーニング',kw:'パーソナルトレーニング',cat:'training'}
+];
+const G_DATA=[
+  {l:'先生が丁寧で優しい',kw:'丁寧'},{l:'説明がわかりやすい',kw:'説明'},
+  {l:'痛みが改善した',kw:'改善'},{l:'痛みが早期にとれた',kw:'早期改善'},
+  {l:'ズボンが入るようになった',kw:'ズボン'},{l:'通いやすい',kw:'通いやすい'},
+  {l:'待ち時間が少ない',kw:'待ち時間'},{l:'院内が清潔',kw:'清潔'},
+  {l:'キッズスペースが助かった',kw:'キッズ'},{l:'受付が子どもを見ていてくれた',kw:'受付見守り'},
+  {l:'保険が使えて安心',kw:'保険'},{l:'矯正が効果的だった',kw:'矯正効果'},
+  {l:'予約が取りやすい',kw:'予約'},{l:'根本から改善してくれる',kw:'根本改善'},
+  {l:'自宅ケアのアドバイスが丁寧',kw:'アドバイス'},{l:'雰囲気がアットホーム',kw:'アットホーム'},
+  {l:'体が軽くなった',kw:'体軽い'},{l:'再発しなくなった',kw:'再発防止'},
+  {l:'姿勢が良くなった',kw:'姿勢良化'},
+  {l:'今までにない身体の使い方ができるようになった',kw:'身体の使い方'},
+  {l:'楽に歩けるようになった',kw:'歩行改善'},
+  {l:'お出かけができるようになった',kw:'外出できた'}
+];
+const A_DATA=[
+  {l:'産後ママ',cat:'postpartum'},{l:'お年寄り',cat:'elder'},
+  {l:'会社員',cat:'worker'},{l:'主婦',cat:'housewife'},
+  {l:'学生',cat:'student'},{l:'スポーツをしている方',cat:'sport'},
+  {l:'子連れの方',cat:'kids'},{l:'社会人',cat:'worker'}
+];
+
+function mkC(g,l,extra){const s=document.createElement('span');s.className='cp';s.dataset.g=g;s.textContent=l;if(extra)Object.keys(extra).forEach(k=>s.dataset[k]=extra[k]);s.addEventListener('click',()=>s.classList.toggle('on'));return s}
+R_DATA.forEach((r,i)=>document.getElementById('rc').appendChild(mkC('r',r.l,{idx:i})));
+G_DATA.forEach((g,i)=>document.getElementById('gc').appendChild(mkC('g',g.l,{idx:i})));
+A_DATA.forEach((a,i)=>document.getElementById('ac').appendChild(mkC('a',a.l,{idx:i})));
+
+const ATTR_RKW={
+  'postpartum':['産後の骨盤ケア','骨盤矯正','姿勢改善','キッズスペース完備'],
+  'elder':['膝痛の専門プログラム','変形性膝関節症の専門施術','保険適用','腰痛ケア'],
+  'worker':['姿勢改善','骨盤矯正','肩こり・腰痛の施術','頭痛ケア'],
+  'housewife':['骨盤矯正','腱鞘炎ケア','姿勢改善','保険適用'],
+  'student':['スポーツ障害ケア','姿勢改善','捻挫の施術','体のメンテナンス'],
+  'sport':['スポーツ障害ケア','体のメンテナンス','捻挫の施術','パフォーマンス向上サポート'],
+  'kids':['キッズスペース完備','産後の骨盤ケア','骨盤矯正','保険適用'],
+  'training':['パーソナルトレーニング','姿勢改善','体の使い方指導','体幹トレーニング']
+};
+const CAT_RKW={
+  upper:['姿勢改善','骨盤矯正','頭痛ケア','肩こり・首こりの施術'],
+  lower:['骨盤矯正','姿勢改善','坐骨神経痛の施術','脊柱管狭窄症ケア','変形性股関節症の施術'],
+  knee:['変形性膝関節症の専門施術','膝痛の専門プログラム','O脚矯正','保険適用'],
+  align:['姿勢改善','骨盤矯正','O脚矯正','体のバランス調整'],
+  postpartum:['産後の骨盤ケア','骨盤矯正','キッズスペース完備','姿勢改善'],
+  accident:['交通事故治療','むちうちケア','保険適用','自賠責対応'],
+  sport:['スポーツ障害ケア','捻挫の施術','体のメンテナンス','パフォーマンス向上サポート'],
+  training:['パーソナルトレーニング','姿勢改善','体の使い方指導','体幹トレーニング','歩行改善'],
+  other:['骨盤矯正','姿勢改善','保険適用','体のトータルケア']
+};
+const RTH={
+  upper:['肩や首のお悩みでご来院いただきありがとうございます','お体のつらさの中ご来院いただきありがとうございます'],
+  lower:['腰のお悩みでご来院いただきありがとうございます','お体の不調の中ご来院くださりありがとうございます'],
+  knee:['膝のお悩みでご来院いただきありがとうございます','お膝のつらさの中通ってくださりありがとうございます'],
+  align:['体の歪みのご相談でご来院いただきありがとうございます','矯正にお越しいただきありがとうございます'],
+  postpartum:['産後のお体のケアでご来院いただきありがとうございます','お忙しい育児の中通ってくださりありがとうございます'],
+  accident:['お体がおつらい中ご来院いただきありがとうございます','事故後の不調でお越しくださりありがとうございます'],
+  sport:['スポーツでのお悩みでご来院いただきありがとうございます','体を大切にされている中お越しくださりありがとうございます'],
+  training:['パーソナルトレーニングにお越しいただきありがとうございます','体づくりにご来院いただきありがとうございます'],
+  other:['ご来院いただきありがとうございます','お体のお悩みでお越しくださりありがとうございます']
+};
+const RMD={
+  upper:['肩や首まわりは日常の姿勢や疲れの影響を受けやすい部分ですので、継続的なケアで根本から改善していきましょう。','デスクワークや日常の負担で硬くなりやすい部分ですが、しっかりサポートさせていただきます。'],
+  lower:['腰・股関節は体の要ですので、日常生活を快適にお過ごしいただけるよう引き続きサポートいたします。','腰や股関節の不調は生活全体に影響しますので、しっかり改善に向けて一緒に取り組んでまいります。'],
+  knee:['膝の痛みは日常の動作に大きく関わりますので、歩くことが楽しくなるようしっかりサポートいたします。','膝のお悩みに対して、お一人おひとりに合わせた施術プランでケアしてまいります。'],
+  align:['体のバランスが整うと、さまざまな不調の改善につながります。引き続き良い状態を目指しましょう。','矯正の効果を感じていただけて嬉しいです。さらに良い状態を維持できるようサポートいたします。'],
+  postpartum:['産後のお体は大きな変化を経ていますので、無理のないペースでしっかりケアしていきましょう。','育児中のお体のケアはとても大切です。お子さま連れでも安心してお越しください。'],
+  accident:['事故後のお体は見えないところにもダメージが残りやすいので、しっかり回復するまでサポートいたします。','お体の不調が少しでも改善されてきているなら何よりです。焦らずじっくり治していきましょう。'],
+  sport:['スポーツを楽しみながら体をケアすることが大切です。怪我の予防も含めてサポートいたします。','体のコンディショニングとパフォーマンス向上のお手伝いをさせていただきます。'],
+  training:['体の正しい使い方を身につけることで、日常の動きが大きく変わります。引き続きサポートいたします。','パーソナルトレーニングを通じて、ご自身の体の可能性を一緒に広げていきましょう。'],
+  other:['お体の不調が少しでも楽になっているようで何よりです。','日々のお体のケアに少しでもお役に立てていれば幸いです。']
+};
+const RCL=['お体のことでお悩みの際は、いつでもお気軽にご相談ください','今後もお一人おひとりに寄り添った施術を心がけてまいります','引き続き、地域の皆さまの健康をサポートさせていただきます'];
+const KS=['接骨院','骨盤矯正','肩こり','腰痛','膝','交通事故','産後','姿勢','矯正','むちうち','スポーツ','頭痛','ぎっくり腰','施術','治療','改善','キッズスペース','保険','肩の痛み','首の痛み','足首','丁寧','痛み','変形性膝関節症','顎関節症','骨盤','受付','回復','五十肩','坐骨神経痛','背中','腱鞘炎','股関節','しびれ','O脚','寝違え','冷え性','変形性股関節症','脊柱管狭窄症','パーソナルトレーニング','歩行','外出','身体の使い方'];
+const KA=['西宮','鳴尾','甲子園','武庫川'];
+const EM={P:['😊','🙏','✨']};
+
+function tLen(t){return t.replace(/[\n\s\u200B-\u200D\uFEFF]/g,'').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,'').length}
+
+let lastRp='';
+
+function genReply(){
+  const rs=sel('r'),as=sel('a');
+  const reviewText=document.getElementById('review-text').value||'';
+  const cat=rs.length?R_DATA[+rs[0].dataset.idx].cat:'other';
+  const attrCat=as.length?A_DATA[+as[0].dataset.idx].cat:'';
+  const thx=P(RTH[cat]||RTH.other);
+  const mid=P(RMD[cat]||RMD.other);
+  let pool=[];
+  if(attrCat&&ATTR_RKW[attrCat])pool=[...ATTR_RKW[attrCat]];
+  if(CAT_RKW[cat])pool=[...pool,...CAT_RKW[cat]];
+  if(!pool.length)pool=['骨盤矯正','姿勢改善','保険適用'];
+  pool=[...new Set(pool)];
+  let rpKws=S(pool).filter(k=>{
+    const c=k.replace(/[・の]/g,'').replace('施術','').replace('専門','').replace('ケア','').replace('完備','');
+    return!reviewText.includes(c);
+  }).slice(0,2);
+  if(!rpKws.length)rpKws=S(pool).slice(0,1);
+  const an=P(['西宮・鳴尾','鳴尾エリア','西宮市鳴尾']);
+  const kwL='とくなが接骨院では'+rpKws.join('や')+'にも対応しておりますので、'+an+'で何かお困りの際はいつでもご相談ください。';
+  const rp=thx+'！'+e(EM.P)+'\n'+mid+'\n'+kwL+'\n'+P(RCL)+'。'+e(EM.P);
+  lastRp=rp;
+  document.getElementById('out-wrap').style.display='block';
+  document.getElementById('rp').textContent=rp;
+  document.getElementById('pcc').textContent=tLen(rp)+'文字';
+  document.getElementById('cok').classList.remove('show');
+  const el=document.getElementById('pk');el.innerHTML='';
+  const f=new Set();KS.forEach(k=>{if(rp.includes(k))f.add(k)});KA.forEach(k=>{if(rp.includes(k))f.add(k)});
+  f.forEach(k=>{const s=document.createElement('span');s.className='kt';s.textContent=k;el.appendChild(s)});
+  document.getElementById('out-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+async function cpy(){
+  try{await navigator.clipboard.writeText(lastRp)}catch(e){const ta=document.createElement('textarea');ta.value=lastRp;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta)}
+  document.getElementById('cok').classList.add('show');
+}
+</script>
+</body>
+</html>
