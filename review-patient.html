@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>クチコミを書いてみる｜とくなが接骨院</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP',sans-serif;background:#fdf8f4;color:#1a1a1a;line-height:1.7;min-height:100vh}
+.hero{background:linear-gradient(135deg,#f97b6b 0%,#f4a26b 100%);padding:32px 16px 28px;text-align:center;color:#fff}
+.hero h1{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:.03em}
+.hero p{font-size:13px;opacity:.9;line-height:1.6}
+.wrap{max-width:640px;margin:0 auto;padding:20px 14px 60px}
+.card{background:#fff;border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.step-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#f97b6b;background:#fff5f3;border:1px solid #fcd5cc;padding:3px 10px;border-radius:20px;margin-bottom:10px}
+.lb{font-size:14px;color:#444;font-weight:700;margin-bottom:10px}
+.hint{font-size:12px;color:#999;margin-bottom:10px;line-height:1.6}
+.cps{display:flex;flex-wrap:wrap;gap:8px}
+.cp{padding:8px 16px;border-radius:22px;font-size:13px;cursor:pointer;border:1.5px solid #eee;background:#fff;color:#444;transition:all .15s;user-select:none;line-height:1.4}
+.cp:hover{border-color:#f4a26b;color:#c0440d}
+.cp.on{background:#fff5f3;border-color:#f97b6b;color:#c0440d;font-weight:600}
+.dv{height:1px;background:#f0ece8;margin:18px 0}
+.sts{display:flex;gap:6px}
+.st{font-size:34px;cursor:pointer;color:#ddd;transition:color .1s;line-height:1}
+.st.lit{color:#f59e0b}
+.sl{padding:9px 14px;border-radius:10px;font-size:13px;border:1.5px solid #eee;background:#fff;color:#333;font-family:inherit;width:100%}
+.bg-gen{width:100%;padding:14px;border-radius:14px;font-size:15px;cursor:pointer;border:none;background:linear-gradient(135deg,#f97b6b,#f4a26b);color:#fff;font-family:inherit;font-weight:700;letter-spacing:.03em;box-shadow:0 4px 12px rgba(249,123,107,.35);transition:opacity .15s}
+.bg-gen:hover{opacity:.9}
+.out-wrap{display:none;margin-top:16px}
+.out-card{background:#fffdf9;border:1.5px solid #f4e6d8;border-radius:14px;padding:16px 18px;margin-bottom:14px}
+.out-label{font-size:12px;color:#bbb;margin-bottom:8px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.out-text{font-size:15px;line-height:1.85;color:#222;white-space:pre-wrap}
+.meta-row{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+.char-cnt{font-size:12px;color:#bbb}
+.seo-wrap{display:flex;gap:5px;align-items:center}
+.seo-dot{width:9px;height:9px;border-radius:50%;background:#e8e4e0}
+.seo-dot.hit{background:#3db88a}
+.seo-lbl{font-size:11px;color:#bbb;margin-left:3px}
+.btn-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.btn-copy{flex:1;padding:12px;border-radius:12px;font-size:14px;cursor:pointer;border:none;background:#3db88a;color:#fff;font-family:inherit;font-weight:700;min-width:120px}
+.btn-copy:hover{background:#30a07a}
+.btn-retry{padding:12px 18px;border-radius:12px;font-size:13px;cursor:pointer;border:1.5px solid #eee;background:#fff;color:#666;font-family:inherit}
+.btn-retry:hover{background:#f5f5f5}
+.cok{font-size:13px;color:#3db88a;opacity:0;transition:opacity .3s;font-weight:600}
+.cok.show{opacity:1}
+.google-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:12px;font-size:14px;cursor:pointer;border:none;background:#4285f4;color:#fff;font-family:inherit;font-weight:700;margin-top:10px;text-decoration:none;box-shadow:0 3px 8px rgba(66,133,244,.3)}
+.google-btn:hover{background:#3367d6}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#f97b6b;color:#fff;font-size:11px;font-weight:700;flex-shrink:0}
+.instr{background:#f7f3ef;border-radius:12px;padding:14px 16px;font-size:13px;color:#666;line-height:1.8;margin-top:12px}
+.instr ol{padding-left:16px}
+.instr li{margin-bottom:4px}
+.sel-row{display:flex;gap:12px;flex-wrap:wrap}
+.sel-item{flex:1;min-width:140px}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>🙏 クチコミを書いてみませんか？</h1>
+  <p>選ぶだけで文章が自動で完成します<br>所要時間：約1〜2分</p>
+</div>
+
+<div class="wrap">
+
+  <!-- STEP 1 星評価 -->
+  <div class="card">
+    <div class="step-badge"><span class="step-num">1</span> 今回の満足度を教えてください</div>
+    <div class="sts" id="stars">
+      <span class="st" data-v="1">★</span>
+      <span class="st" data-v="2">★</span>
+      <span class="st" data-v="3">★</span>
+      <span class="st" data-v="4">★</span>
+      <span class="st" data-v="5">★</span>
+    </div>
+  </div>
+
+  <!-- STEP 2 症状 -->
+  <div class="card">
+    <div class="step-badge"><span class="step-num">2</span> 来院のきっかけを教えてください（複数OK）</div>
+    <div class="cps" id="rc"></div>
+  </div>
+
+  <!-- STEP 3 良かった点 -->
+  <div class="card">
+    <div class="step-badge"><span class="step-num">3</span> 良かったと思う点を選んでください（複数OK）</div>
+    <div class="cps" id="gc"></div>
+  </div>
+
+  <!-- STEP 4 属性・文体 -->
+  <div class="card">
+    <div class="step-badge"><span class="step-num">4</span> あなたについて教えてください（任意）</div>
+    <div class="sel-row">
+      <div class="sel-item"><div class="lb" style="font-size:13px;margin-bottom:6px">属性</div><select class="sl" id="attr"><option value="">指定なし</option></select></div>
+      <div class="sel-item"><div class="lb" style="font-size:13px;margin-bottom:6px">文体</div><select class="sl" id="tone"><option value="0">やわらかく自然</option><option value="1">ざっくばらん</option><option value="2">ていねいな書き言葉</option></select></div>
+      <div class="sel-item"><div class="lb" style="font-size:13px;margin-bottom:6px">絵文字</div><select class="sl" id="emolv"><option value="2">あり</option><option value="1">少しだけ</option><option value="0">なし</option></select></div>
+    </div>
+  </div>
+
+  <button class="bg-gen" onclick="genReview()">✨ クチコミ文を作成する</button>
+
+  <!-- 生成結果 -->
+  <div class="out-wrap" id="out-wrap">
+    <div class="out-card">
+      <div class="out-label">📝 あなたのクチコミ サンプル文</div>
+      <div class="out-text" id="rv"></div>
+      <div class="meta-row">
+        <span class="char-cnt" id="rcc"></span>
+        <div class="seo-wrap" id="sm"></div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <strong>📋 Googleマップへの投稿方法</strong>
+      <ol style="margin-top:8px">
+        <li>下の「コピーする」ボタンを押す</li>
+        <li>「Googleマップで書く」ボタンを押す</li>
+        <li>開いたページに文章を貼り付けて投稿する</li>
+      </ol>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-copy" onclick="cpy()">📋 コピーする</button>
+      <button class="btn-retry" onclick="genReview()">🔄 別の文章にする</button>
+    </div>
+    <span class="cok" id="cok" style="display:block;text-align:center;margin-top:8px">コピーしました！次はGoogleマップに貼り付けてください 😊</span>
+    <a class="google-btn" href="https://search.google.com/local/writereview?placeid=ChIJxxxxxxxxxx" target="_blank" id="google-link">
+      🗺️ Googleマップで書く
+    </a>
+  </div>
+
+</div>
+
+<script>
+// ★ GoogleマップのPlace IDをここに設定してください
+const PLACE_ID = 'ChIJxxxxxxxxxx';
+document.getElementById('google-link').href = 'https://search.google.com/local/writereview?placeid=' + PLACE_ID;
+
+let sv = 5, lastRv = '';
+const ss = document.querySelectorAll('.st');
+function rS(){ss.forEach((x,i)=>x.classList.toggle('lit',i<sv))}
+ss.forEach(s=>{
+  s.addEventListener('mouseenter',()=>{ss.forEach((x,i)=>x.classList.toggle('lit',i<+s.dataset.v))});
+  s.addEventListener('click',()=>{sv=+s.dataset.v;rS()});
+});
+document.getElementById('stars').addEventListener('mouseleave',rS);
+rS();
+
+function P(a){return a[Math.floor(Math.random()*a.length)]}
+function S(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+function sel(g){return[...document.querySelectorAll(`.cp[data-g="${g}"].on`)]}
+function emoLv(){return+document.getElementById('emolv').value}
+function e(pool){if(emoLv()===0)return'';return P(pool)}
+function eMaybe(pool){const lv=emoLv();if(lv===0)return'';if(lv===1)return Math.random()<0.35?P(pool):'';return P(pool)}
+
+const R_DATA=[
+  {l:'肩の痛み',kw:'肩の痛み',s:['肩の痛みがひどくなってきて','肩が痛くて腕が上がりにくくなり','肩の痛みがなかなか取れず'],cat:'upper'},
+  {l:'首の痛み',kw:'首の痛み',s:['首の痛みがつらくて','首が痛くて回らなくなり','首の張りと痛みが続いていて'],cat:'upper'},
+  {l:'肩こり・首こり',kw:'肩こり',s:['慢性的な肩こりに長年悩んでいて','肩や首のこりがひどくなり','ひどい肩こりに耐えられなくなって'],cat:'upper'},
+  {l:'腰痛',kw:'腰痛',s:['腰痛がだんだんひどくなってきて','腰の痛みで日常生活にも支障が出て','長年の腰痛に悩まされていて'],cat:'lower'},
+  {l:'ぎっくり腰',kw:'ぎっくり腰',s:['突然のぎっくり腰で動けなくなり','ぎっくり腰になってしまい','急に腰を痛めてまともに歩けなくなり'],cat:'lower'},
+  {l:'膝の痛み',kw:'膝の痛み',s:['膝の痛みで階段がつらくなり','膝が痛くて歩くのも大変になり','膝の痛みが日に日にひどくなって'],cat:'knee'},
+  {l:'足首の痛み',kw:'足首の痛み',s:['足首を痛めてしまい歩くのがつらくて','足首の痛みがなかなか引かなくて','足首の捻挫がなかなか治らず'],cat:'sport'},
+  {l:'変形性膝関節症専門プログラム',kw:'変形性膝関節症',s:['変形性膝関節症と診断されて悩んでいたところ','膝の痛みがひどく変形性膝関節症と言われ','変形性膝関節症で長年膝の痛みに苦しんでいて'],cat:'knee'},
+  {l:'骨盤矯正',kw:'骨盤矯正',s:['骨盤の歪みが気になっていて','骨盤矯正に興味があり','体の歪みが気になって骨盤矯正を受けたくて'],cat:'align'},
+  {l:'産後の骨盤矯正',kw:'産後骨盤',s:['産後の骨盤の歪みが気になり','出産後の体の不調で骨盤矯正を探していて','産後しばらくして骨盤の歪みを感じるようになり'],cat:'postpartum'},
+  {l:'顎関節症',kw:'顎関節症',s:['顎関節症で口が開きにくくなり','顎の痛みや開きにくさに悩んでいて','顎関節症で食事も大変になってきて'],cat:'other'},
+  {l:'姿勢改善・猫背',kw:'姿勢改善',s:['猫背や姿勢の悪さが気になって','姿勢の悪さから体の不調が出てきて','長年の猫背をなんとかしたくて'],cat:'align'},
+  {l:'交通事故のケア',kw:'交通事故',s:['交通事故の後遺症で体がつらくて','事故の後から体のあちこちが痛くなり','交通事故後の体の不調が続いていて'],cat:'accident'},
+  {l:'むちうち',kw:'むちうち',s:['むちうちの症状がなかなか取れず','事故後のむちうちで首や肩がつらくて','むちうちで頭痛や首の痛みが続いていて'],cat:'accident'},
+  {l:'スポーツ障害・捻挫',kw:'スポーツ障害',s:['スポーツで体を痛めてしまい','運動中に怪我をしてしまい','スポーツでの怪我がなかなか治らず'],cat:'sport'},
+  {l:'頭痛・めまい',kw:'頭痛',s:['慢性的な頭痛に悩まされていて','頭痛やめまいがひどくなり','原因不明の頭痛がずっと続いていて'],cat:'upper'},
+  {l:'四十肩・五十肩',kw:'五十肩',s:['四十肩で腕が上がらなくなり','五十肩の痛みで着替えるのも大変になり','肩が急に上がらなくなって五十肩と言われ'],cat:'upper'},
+  {l:'坐骨神経痛',kw:'坐骨神経痛',s:['坐骨神経痛でお尻から足にかけて痺れが出てきて','坐骨神経痛の痛みが日に日にひどくなり','腰から足にかけての痛みや痺れがつらくて'],cat:'lower'},
+  {l:'背中の痛み',kw:'背中の痛み',s:['背中の痛みがなかなか取れず','背中がバキバキに張ってつらくて','背中の張りや痛みが慢性化してきて'],cat:'upper'},
+  {l:'手首・腱鞘炎',kw:'腱鞘炎',s:['手首の痛みがひどくて物を持つのもつらくて','腱鞘炎で手首に痛みが出てきて','育児や家事で手首を酷使して腱鞘炎になり'],cat:'other'},
+  {l:'股関節の痛み',kw:'股関節',s:['股関節の痛みで歩くのがつらくなり','股関節がゴリゴリして痛みが出てきて','股関節の違和感と痛みが気になりだして'],cat:'lower'},
+  {l:'しびれ',kw:'しびれ',s:['手や足のしびれがなかなか取れず','しびれが続いていて不安になり','腕や足にしびれを感じるようになって'],cat:'other'},
+  {l:'O脚・X脚',kw:'O脚',s:['O脚が気になっていて','脚のラインが気になって相談したくて','O脚の見た目と膝への負担が気になり'],cat:'align'},
+  {l:'寝違え',kw:'寝違え',s:['寝違えて首が全く動かなくなり','朝起きたら首が回らなくなってしまい','ひどい寝違えで仕事にも支障が出て'],cat:'upper'},
+  {l:'冷え性・むくみ',kw:'冷え性',s:['冷え性がひどくて手足がいつも冷たくて','むくみと冷えが慢性化してきて','足のむくみと冷えが気になりだして'],cat:'other'},
+  {l:'変形性膝関節症',kw:'変形性膝関節症',s:['変形性膝関節症と診断されて長年膝の痛みに悩んでいて','変形性膝関節症で膝が痛くて歩くのもつらくなり','変形性膝関節症の痛みで日常生活に支障が出てきて'],cat:'knee'},
+  {l:'変形性股関節症',kw:'変形性股関節症',s:['変形性股関節症と言われ股関節の痛みがひどくなり','変形性股関節症で歩くたびに股関節が痛くて','変形性股関節症の診断を受けて悩んでいたところ'],cat:'lower'},
+  {l:'股関節痛',kw:'股関節痛',s:['股関節の痛みがだんだんひどくなってきて','股関節が痛くて思うように歩けなくなり','股関節の痛みで日常の動作がつらくなってきて'],cat:'lower'},
+  {l:'脊柱管狭窄症',kw:'脊柱管狭窄症',s:['脊柱管狭窄症で腰から足にかけて痛みやしびれが出てきて','脊柱管狭窄症と診断されて歩くのがつらくなり','脊柱管狭窄症の症状で長く歩けなくなってきて'],cat:'lower'},
+  {l:'パーソナルトレーニング',kw:'パーソナルトレーニング',s:['体の使い方を見直したくてパーソナルトレーニングに興味を持ち','体幹や正しい動きを身につけたくてパーソナルトレーニングを受けたくて','運動習慣をつけながら体を根本から整えたくて'],cat:'training'}
+];
+const G_DATA=[
+  {l:'先生が丁寧で優しい',kw:'丁寧',t:[['先生がとても丁寧に診てくださって、一つひとつの施術を説明しながら進めてくれるので安心感がありました','R'],['先生の対応がすごく優しくて、痛みの状態をしっかり聞いてくれた上で丁寧に施術してくれました','R'],['先生がとにかく丁寧で、体のことを親身になって考えてくれているのが伝わってきました','R']]},
+  {l:'説明がわかりやすい',kw:'説明',t:[['施術前に体の状態や原因を図や模型を使ってわかりやすく説明してもらえたので、納得して施術を受けられました','I'],['どこがどう悪くて、なぜ痛みが出ているのかを最初にしっかり説明してくださったので信頼できました','I']]},
+  {l:'痛みが改善した',kw:'改善',t:[['何回か通ううちに明らかに体の調子が良くなっていくのを実感できました','I'],['施術を受けるたびに痛みが和らいでいって、今ではほとんど気にならないレベルになりました','R']]},
+  {l:'痛みが早期にとれた',kw:'早期改善',t:[['初回の施術から体が軽くなるのを感じて、数回通っただけでかなり痛みがとれました','I'],['想像以上に早く効果が出て、2〜3回でだいぶ痛みが引きました','R']]},
+  {l:'ズボンが入るようになった',kw:'ズボン',t:[['骨盤矯正を続けていたら、産前に履いていたズボンがまた入るようになりました！','I'],['骨盤が整ったおかげか、以前のパンツがまた履けるようになって本当に嬉しいです','R']]},
+  {l:'通いやすい',kw:'通いやすい',t:[['駅からのアクセスも良くて、仕事帰りにも無理なく通える立地なのもポイント高いです','I'],['場所がわかりやすく、自宅からも近いので定期的に通いやすいのがありがたいです','R']]},
+  {l:'待ち時間が少ない',kw:'待ち時間',t:[['予約制なので待ち時間がほぼなくて、忙しい中でも時間を有効に使えるのが助かります','I'],['予約した時間にすぐ施術してもらえるので、スケジュールが組みやすいです','R']]},
+  {l:'院内が清潔',kw:'清潔',t:[['院内がいつもきれいに整っていて、清潔感があるので気持ちよく通えています','I'],['院内の雰囲気が明るくて清潔で、初めて来た時から好印象でした','R']]},
+  {l:'キッズスペースが助かった',kw:'キッズ',t:[['キッズスペースが完備されていて、子どもが退屈せずに待てる環境なのがありがたいです','C'],['子ども連れでも大丈夫なキッズスペースがあるので、小さいお子さんがいるママさんにもおすすめです','C']]},
+  {l:'受付が子どもを見ていてくれた',kw:'受付見守り',t:[['受付のスタッフさんが施術中に子どもを見ていてくれるので、本当に安心して施術に集中できました','C'],['施術の間、受付の方が子どもの相手をしてくれていて、子どもも楽しそうにしていました','C']]},
+  {l:'保険が使えて安心',kw:'保険',t:[['保険が適用されるので、費用面でも無理なく継続して通えるのがありがたいです','I'],['保険が使えるので経済的にも安心ですし、施術の質も高くてコスパが良いと感じます','I']]},
+  {l:'矯正が効果的だった',kw:'矯正効果',t:[['矯正を受けてから体全体のバランスが良くなって、いろんな不調が改善されてきました','I'],['矯正の効果で姿勢が良くなり、体が本当に軽くなったのを実感しています','I']]},
+  {l:'予約が取りやすい',kw:'予約',t:[['予約がとりやすくて、自分のペースで通えるのが続けやすいポイントです','R'],['ネットで簡単に予約できるので便利ですし、希望の時間に入れることが多いです','R']]},
+  {l:'根本から改善してくれる',kw:'根本改善',t:[['痛みの原因を根本から見てくれるので、その場しのぎではなくしっかり改善に向かっている感じがします','I'],['対症療法ではなく体の根本から治してくれるので、再発しにくくなったと実感しています','I']]},
+  {l:'自宅ケアのアドバイスが丁寧',kw:'アドバイス',t:[['施術だけでなく、自宅でのストレッチや生活の注意点も丁寧に教えてもらえるのが嬉しいです','I'],['家でできるセルフケアの方法も毎回教えてくれるので、自分でもケアを続けられています','R']]},
+  {l:'雰囲気がアットホーム',kw:'アットホーム',t:[['院の雰囲気がアットホームで、スタッフの皆さんもいつも笑顔で迎えてくれるので気持ちよく通えます','R'],['先生もスタッフさんも明るくて、リラックスした雰囲気で施術を受けられます','R']]},
+  {l:'体が軽くなった',kw:'体軽い',t:[['施術を受けた後は毎回体が驚くほど軽くなって、帰り道の足取りが全然違います','I'],['施術後の体の軽さにびっくり。こんなに違うんだと毎回実感しています','I']]},
+  {l:'再発しなくなった',kw:'再発防止',t:[['以前は何度も繰り返していた痛みが、こちらに通い始めてから再発しなくなりました','I'],['根本から治してもらえたおかげで、同じ痛みが出なくなったのが一番嬉しいです','R']]},
+  {l:'姿勢が良くなった',kw:'姿勢良化',t:[['周りの人から「姿勢が良くなったね」と言われるようになりました','I'],['矯正を続けていたら自然と姿勢が良くなって、鏡を見るのが楽しくなりました','R']]},
+  {l:'今までにない身体の使い方ができるようになった',kw:'身体の使い方',t:[['今まで意識したことのなかった体の使い方を教えてもらって、動きが全然変わりました','I'],['体の正しい使い方を丁寧に指導してもらえて、こんな感覚は初めてでびっくりしました','I'],['施術を通じて体の動かし方が変わり、日常の動作がずいぶん楽になりました','R']]},
+  {l:'楽に歩けるようになった',kw:'歩行改善',t:[['通い始めてから歩くのが楽になって、外出するのが怖くなくなりました','I'],['以前は歩くのがつらかったのに、今では普通に歩けるようになって本当に嬉しいです','R'],['歩くたびに痛かったのが、施術のおかげでスタスタ歩けるようになりました','I']]},
+  {l:'お出かけができるようになった',kw:'外出できた',t:[['痛みで諦めていたお出かけが、施術のおかげでまたできるようになりました','I'],['以前は外出を控えていましたが、今は積極的に出かけられるようになって生活が変わりました','R'],['家族との外出も満足にできなかったのに、今ではどこへでも行けるようになって感謝しています','I']]}
+];
+const A_DATA=[
+  {l:'産後ママ',t:['産後の体のケアのために','出産後、体の不調を感じるようになり']},
+  {l:'お年寄り',t:['年齢とともに体のあちこちが気になりだし','歳を重ねて体の不調が増えてきたので']},
+  {l:'会社員',t:['デスクワーク続きで体がガチガチになり','仕事の疲れが体に出てきて']},
+  {l:'主婦',t:['家事や買い物で体に負担がかかっていて','毎日の家事の積み重ねで体がつらくなってきて']},
+  {l:'学生',t:['部活で体を痛めてしまい','勉強中の姿勢が悪くて体に不調が出てきて']},
+  {l:'スポーツをしている方',t:['スポーツで体を酷使していて','トレーニング中に体を痛めてしまい']},
+  {l:'子連れの方',t:['小さい子どもがいるので自分の体は後回しにしていましたが','育児で体がボロボロになっていたので']},
+  {l:'社会人',t:['仕事と日常生活で体に疲れが蓄積してきて','社会人になってから体のメンテナンスを怠っていて']}
+];
+
+// セレクトボックスに属性を追加
+A_DATA.forEach((a,i)=>{const o=document.createElement('option');o.value=i;o.textContent=a.l;document.getElementById('attr').appendChild(o)});
+
+// チップ生成
+function mkC(g,l,extra){const s=document.createElement('span');s.className='cp';s.dataset.g=g;s.textContent=l;if(extra)Object.keys(extra).forEach(k=>s.dataset[k]=extra[k]);s.addEventListener('click',()=>s.classList.toggle('on'));return s}
+R_DATA.forEach((r,i)=>document.getElementById('rc').appendChild(mkC('r',r.l,{idx:i})));
+G_DATA.forEach((g,i)=>document.getElementById('gc').appendChild(mkC('g',g.l,{idx:i})));
+
+const AREAS=['西宮の鳴尾にある','鳴尾エリアの','西宮市鳴尾の','甲子園の近くにある','鳴尾にある','西宮の'];
+const FIND=['知人の紹介で','ネットで調べて','近所で評判が良いと聞いて','Googleの口コミを見て','家族のすすめで','友人に教えてもらって'];
+const EM={R:['😊','🙌','😆'],I:['✨','💪','👍'],T:['😣','😰','💦'],K:['🙏','😊','⭐'],C:['👶','🧒','😊']};
+const CLOSES=[
+  ['これからもお世話になります！同じような悩みを持っている方にぜひおすすめしたいです','先生に出会えて本当に良かったです。自信を持っておすすめできる接骨院です'],
+  ['ほんまにここ来てよかった！同じような悩みある人にはマジでおすすめ','めっちゃ助かってます。迷ってる人は一回行ってみてほしい'],
+  ['大変信頼のおける接骨院です。同様の症状でお悩みの方に心よりお勧めいたします','安心して身体を任せることができます。どなたにでも自信を持ってお勧めできます']
+];
+const PATCH_IMP=['おかげさまで体の調子がかなり改善してきて、日常生活が楽になりました','施術を重ねるごとに体が回復してきているのを実感しています'];
+const PATCH_LEN=['先生はいつも体の状態をしっかり確認してから施術に入ってくれるので、毎回安心してお任せできます','施術だけでなく、自宅でのストレッチや日常生活のアドバイスも丁寧に教えてもらえるのが嬉しいです'];
+const KA=['西宮','鳴尾','甲子園','武庫川'];
+const SF=['サービス名','地域名','悩み→改善','具体性','適切な長さ'];
+const IW=['改善','楽に','良く','取れ','引き','軽く','入るよう','変わ','整っ','実感','和らい','治','回復','再発しな','歩け','出かけ','使い方'];
+function tLen(t){return t.replace(/[\n\s\u200B-\u200D\uFEFF]/g,'').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,'').length}
+function chk(rv,rk){return[rk.length?rk.some(k=>rv.includes(k)):rv.includes('施術'),KA.some(k=>rv.includes(k)),IW.some(w=>rv.includes(w)),tLen(rv)>150,tLen(rv)>=200&&tLen(rv)<=500]}
+
+function genReview(){
+  const rs=sel('r'),gs=sel('g'),tIdx=+document.getElementById('tone').value;
+  const attrIdx=document.getElementById('attr').value;
+  if(!rs.length&&!gs.length){alert('来院のきっかけか良かった点を1つ以上選んでください');return}
+  const area=P(AREAS),find=P(FIND);
+  let ai='';
+  if(attrIdx!==''){const a=A_DATA[+attrIdx];if(a)ai=P(a.t)+'、';}
+  let sym='体の不調が気になり',rk=[];
+  if(rs.length){const rd=R_DATA[+rs[0].dataset.idx];sym=P(rd.s);rk.push(rd.kw);if(rs.length>1)rk.push(R_DATA[+rs[1].dataset.idx].kw);}
+  let l1=ai+sym+'、'+find+area+'とくなが接骨院さんに通い始めました。'+e(EM.T);
+  let gL=[];S(gs).forEach(g=>{const gd=G_DATA[+g.dataset.idx];if(gd&&gd.t.length){const c=P(gd.t);gL.push(c[0]+'。'+eMaybe(EM[c[1]]));}});
+  if(!gL.length)gL.push('施術がとても的確で、通うたびに体の調子が良くなっていくのを実感できました。'+eMaybe(EM.I));
+  let p2='\n\n'+gL.slice(0,2).join('\n');if(gL.length>2)p2+='\n'+gL[2];
+  if(rs.length>1)p2+='\n'+R_DATA[+rs[1].dataset.idx].kw+'の施術もしっかり対応してもらえて助かりました。'+eMaybe(EM.R);
+  let p3='\n\n'+P(CLOSES[tIdx])+' '+e(EM.K);
+  let rv=l1+p2+p3;
+  let hits=chk(rv,rk);
+  if(hits.filter(Boolean).length<4){
+    let pa=[];
+    if(!hits[0]&&rk.length)pa.push(rk[0]+'の施術もしっかりしていて、安心してお任せできます。'+eMaybe(EM.I));
+    if(!hits[2])pa.push(P(PATCH_IMP)+'。'+eMaybe(EM.R));
+    if(!hits[3]||!hits[4])pa.push(P(PATCH_LEN)+'。'+eMaybe(EM.I));
+    if(pa.length)rv=l1+p2+'\n'+pa.join('\n')+p3;
+  }
+  lastRv=rv;
+  document.getElementById('out-wrap').style.display='block';
+  document.getElementById('rv').textContent=rv;
+  document.getElementById('rcc').textContent=tLen(rv)+'文字';
+  document.getElementById('cok').classList.remove('show');
+  const fh=chk(rv,rk);const el=document.getElementById('sm');el.innerHTML='';
+  fh.forEach((h,i)=>{const d=document.createElement('span');d.className='seo-dot'+(h?' hit':'');d.title=SF[i];el.appendChild(d)});
+  const lg=document.createElement('span');lg.className='seo-lbl';const fs=fh.filter(Boolean).length;
+  lg.textContent='SEO '+fs+'/'+fh.length+(fs>=4?' ✔':'');lg.style.color=fs>=4?'#3db88a':'#bbb';el.appendChild(lg);
+  document.getElementById('out-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+async function cpy(){
+  try{await navigator.clipboard.writeText(lastRv)}catch(e){const ta=document.createElement('textarea');ta.value=lastRv;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta)}
+  document.getElementById('cok').classList.add('show');
+}
+</script>
+</body>
+</html>
